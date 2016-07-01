@@ -6,45 +6,43 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.jdbc.core.ResultSetExtractor;
+
 import com.gcit.lms.domain.Author;
 import com.gcit.lms.domain.Book;
 
 @SuppressWarnings("unchecked")
-public class AuthorDAO extends BaseDAO{
-
-	public AuthorDAO(Connection conn) {
-		super(conn);
-	}
+public class AuthorDAO extends BaseDAO implements ResultSetExtractor<List<Author>>{
 
 	public void insertAuthor(Author author) throws ClassNotFoundException, SQLException{
-		save("insert into tbl_author (authorName) values (?)", new Object[] {author.getAuthorName()});
+		template.update("insert into tbl_author (authorName) values (?)", new Object[] {author.getAuthorName()});
 	}
 	
 	public void deleteAuthor(Author author) throws ClassNotFoundException, SQLException{
-		save("delete from tbl_author where authorId=?", new Object[] {author.getAuthorId()});
+		template.update("delete from tbl_author where authorId=?", new Object[] {author.getAuthorId()});
 	}
 	
 	public void deleteAll() throws ClassNotFoundException, SQLException{
-		save("delete * from tbl_author", null);
+		template.update("delete * from tbl_author");
 	}
 	
 	public void updateAuthor(Author author) throws ClassNotFoundException, SQLException{
-		save("update tbl_author set authorName = ? where authorId = ?", new Object[] {author.getAuthorName(), author.getAuthorId()});
+		template.update("update tbl_author set authorName = ? where authorId = ?", new Object[] {author.getAuthorName(), author.getAuthorId()});
 	}
 	
 	
 	public List<Author> readAll(int pageNo) throws ClassNotFoundException, SQLException{
 		setPageNo(pageNo);
-		return read("select * from tbl_author", null);
+		return template.query("select * from tbl_author", this);
 	}
 	
 	public List<Author> readAllFirstLevel(int pageNo) throws ClassNotFoundException, SQLException{
 		setPageNo(pageNo);
-		return readFirstLevel("select * from tbl_author", null);
+		return template.query("select * from tbl_author", this);
 	}
 	
 	public Author readOne(Author author) throws ClassNotFoundException, SQLException{
-		List<Author> authors = read("select * from tbl_author where authorId =?", new Object[] {author.getAuthorId()});
+		List<Author> authors = template.query("select * from tbl_author where authorId =?", new Object[] {author.getAuthorId()}, this);
 		for(Author a: authors){
 			return a;
 		}
@@ -52,7 +50,7 @@ public class AuthorDAO extends BaseDAO{
 	}
 	
 	public Integer getCount() throws ClassNotFoundException, SQLException{
-		return readCount("select count(*) as count from tbl_author", null);
+		return template.queryForObject("select count(*) as count from tbl_author", Integer.class);
 	}
 	
 	public List<Author> readBySearchString(String searchString, int pageNo) throws ClassNotFoundException, SQLException {
@@ -61,45 +59,19 @@ public class AuthorDAO extends BaseDAO{
 			searchString = "%%";
 		else
 			searchString = "%" + searchString + "%";
-		return read("select * from tbl_author where authorName like ?", new Object[] {searchString});
+		return template.query("select * from tbl_author where authorName like ?", new Object[] {searchString}, this);
 	}
 
 	@Override
 	public List<Author> extractData(ResultSet rs) throws SQLException {
 		List<Author> authors = new ArrayList<Author>();
-		BookDAO bdao = new BookDAO(connection);
 		while(rs.next()){
 			Author a = new Author();
 			a.setAuthorId(rs.getInt("authorId"));
 			a.setAuthorName(rs.getString("authorName"));
-			try {
-				List<Book> books = bdao.readFirstLevel("select * from tbl_book where bookId IN(select bookId from tbl_book_authors where authorId = ?)", new Object[]{a.getAuthorId()});
-				if( books.isEmpty() ){
-					Book b = new Book();
-					b.setTitle("N/A");
-					books.add(b);
-				}
-				a.setBooks(books);
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			
 			authors.add(a);
 		}
 		return authors;
 	}
-
-	@Override
-	public List<Author> extractDataFirstLevel(ResultSet rs) throws SQLException {
-		List<Author> authors = new ArrayList<Author>();
-		while(rs.next()){
-			Author a = new Author();
-			a.setAuthorId(rs.getInt("authorId"));
-			a.setAuthorName(rs.getString("authorName"));
-			authors.add(a);
-		}
-		return authors;
-	}
-
-	
 }

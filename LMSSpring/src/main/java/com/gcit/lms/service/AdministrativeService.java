@@ -1,8 +1,11 @@
 package com.gcit.lms.service;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.gcit.lms.dao.AuthorDAO;
 import com.gcit.lms.dao.BookAuthorsDAO;
@@ -21,429 +24,181 @@ import com.gcit.lms.domain.Genre;
 import com.gcit.lms.domain.LibraryBranch;
 import com.gcit.lms.domain.Publisher;
 
+
+@Service
 public class AdministrativeService {
 	
-	ConnectionUtil util = new ConnectionUtil();
+	@Autowired
+	AuthorDAO adao;
 	
+	@Autowired
+	BookDAO bdao;
+	
+	@Autowired
+	PublisherDAO pdao;
+	
+	@Autowired
+	GenreDAO gdao;
+	
+	@Autowired
+	BorrowerDAO bodao;
+	
+	@Autowired
+	BookAuthorsDAO badao;
+	
+	@Autowired
+	BookGenresDAO bgdao;
+	
+	@Autowired
+	BookCopiesDAO bcdao;
+	
+	@Autowired
+	LibraryBranchDAO ldao;
+	
+	@Transactional
 	public void createAuthor(Author author) throws ClassNotFoundException, SQLException{
-		Connection conn = util.getConnection();
-		try{
-			AuthorDAO adao = new AuthorDAO(conn);
-			adao.insertAuthor(author);
-			conn.commit();
-		}catch (Exception e){
-			e.printStackTrace();
-			conn.rollback();
-		}finally{
-			conn.close();
-		}
+		adao.insertAuthor(author);
 	}
 	
+	@Transactional
 	public void createBorrower(Borrower bo) throws SQLException, ClassNotFoundException{
-		Connection conn = util.getConnection();
-		try{
-			BorrowerDAO bodao = new BorrowerDAO(conn);
-			bodao.insertBorrower(bo);
-			conn.commit();
-		}catch (Exception e){
-			e.printStackTrace();
-			conn.rollback();
-		}finally{
-			conn.close();
-		}
+		System.out.println("1");
+		bodao.insertBorrower(bo);
 	}
 	
+	@Transactional
 	public void editBorrower(Borrower bo) throws ClassNotFoundException, SQLException{
-		Connection conn = util.getConnection();
-		try{
-			BorrowerDAO bodao = new BorrowerDAO(conn);
-			bodao.updateBorrower(bo);
-			conn.commit();
-		}catch (Exception e){
-			e.printStackTrace();
-			conn.rollback();
-		}finally{
-			conn.close();
-		}
+		bodao.updateBorrower(bo);
 	}
 	
-	public void editAuthor(Author author) throws ClassNotFoundException, SQLException
-	{
-		Connection conn = util.getConnection();
-		try{
-			AuthorDAO adao = new AuthorDAO(conn);
-			adao.updateAuthor(author);
-			conn.commit();
-		}catch (Exception e){
-			e.printStackTrace();
-			conn.rollback();
-		}finally{
-			conn.close();
-		}
+	@Transactional
+	public void editAuthor(Author author) throws ClassNotFoundException, SQLException{
+		adao.updateAuthor(author);
 	}
 	
+	@Transactional
 	public void editBook(Book b) throws ClassNotFoundException, SQLException {
-		Connection conn = util.getConnection();
-		try{
-			BookDAO bdao = new BookDAO(conn);
-			bdao.updateBook(b);
-			BookAuthorsDAO badao = new BookAuthorsDAO(conn);
-			badao.deleteBookAuthors(b);
-			badao.insertBookAuthors(b);
-			BookGenresDAO bgdao = new BookGenresDAO(conn);
-			bgdao.deleteBookGenres(b);
-			bgdao.insertBookGenres(b);
-			conn.commit();
-		}catch (Exception e){
-			e.printStackTrace();
-			conn.rollback();
-		}finally{
-			conn.close();
-		}
+		bdao.updateBook(b);
+		badao.deleteBookAuthors(b);
+		badao.insertBookAuthors(b);
+		bgdao.deleteBookGenres(b);
+		bgdao.insertBookGenres(b);
 	}
 	
+	@Transactional
 	public void createGenre(Genre g) throws ClassNotFoundException, SQLException{
-		Connection conn = util.getConnection();
-		try{
-			GenreDAO gdao = new GenreDAO(conn);
-			gdao.insertGenre(g);
-			conn.commit();
-		}catch (Exception e){
-			e.printStackTrace();
-			conn.rollback();
-		}finally{
-			conn.close();
-		}
+		gdao.insertGenre(g);
 	}
 	
+	@Transactional
 	public void createPublisher(Publisher p) throws ClassNotFoundException, SQLException{
-		Connection conn = util.getConnection();
-		try{
-			PublisherDAO pdao = new PublisherDAO(conn);
-			pdao.insertPublisher(p);
-			conn.commit();
-		}catch (Exception e){
-			e.printStackTrace();
-			conn.rollback();
-		}finally{
-			conn.close();
-		}
+		pdao.insertPublisher(p);
 	}
 	
-	public void editBookCopies(BookCopies bc) throws ClassNotFoundException, SQLException
-	{
-		Connection conn = util.getConnection();
-		try{
-			BookCopiesDAO bcdao = new BookCopiesDAO(conn);		
-			bcdao.updateBookCopies(bc);			
-			conn.commit();
-		}catch (Exception e){
-			e.printStackTrace();
-			conn.rollback();
-		}finally{
-			conn.close();
-		}
+	@Transactional
+	public void editBookCopies(BookCopies bc) throws ClassNotFoundException, SQLException{
+		bcdao.updateBookCopies(bc);			
 	}
 	
-	public void createBookCopies(BookCopies bc) throws ClassNotFoundException, SQLException
-	{
-		Connection conn = util.getConnection();
-		try{
-			BookCopiesDAO bcdao = new BookCopiesDAO(conn);		
-			bcdao.insertBookCopies(bc);			
-			conn.commit();
-		}catch (Exception e){
-			e.printStackTrace();
-			conn.rollback();
-		}finally{
-			conn.close();
-		}
+	@Transactional
+	public void createBookCopies(BookCopies bc) throws ClassNotFoundException, SQLException{
+		bcdao.insertBookCopies(bc);			
 	}
 	
-
+	@Transactional
 	public void editBranch(LibraryBranch lib) throws ClassNotFoundException, SQLException{
-		Connection conn = util.getConnection();
-		try{
-			LibraryBranchDAO ldao = new LibraryBranchDAO(conn);
-			ldao.updateLibraryBranch(lib);
-			conn.commit();
-		}catch (Exception e){
-			e.printStackTrace();
-			conn.rollback();
-		}finally{
-			conn.close();
-		}
+		ldao.updateLibraryBranch(lib);
 	}
 
-	
-	public void createLibraryBranch(LibraryBranch lib) throws ClassNotFoundException, SQLException
-	{
-		Connection conn = util.getConnection();
-		try{
-			LibraryBranchDAO lbdao = new LibraryBranchDAO(conn);
-			lbdao.insertLibraryBranch(lib);
-			conn.commit();
-		}catch (Exception e){
-			e.printStackTrace();
-			conn.rollback();
-		}finally{
-			conn.close();
-		}
+	@Transactional
+	public void createLibraryBranch(LibraryBranch lib) throws ClassNotFoundException, SQLException{
+		ldao.insertLibraryBranch(lib);
 	}
 	
-	
+	@Transactional
 	public void createBook(Book book) throws ClassNotFoundException, SQLException{
-		Connection conn = util.getConnection();
-		try{
-			BookDAO bdao = new BookDAO(conn);
-			Integer bookId = bdao.saveBookWithID(book);
-			book.setBookId(bookId);
-			
-			BookAuthorsDAO bkaudao = new BookAuthorsDAO(conn);
-			bkaudao.insertBookAuthors(book);
-			BookGenresDAO bgdao = new BookGenresDAO(conn);
-			bgdao.insertBookGenres(book);
-			
-			conn.commit();
-		}catch (Exception e){
-			e.printStackTrace();
-			conn.rollback();
-		}finally{
-			conn.close();
-		}
+		Integer bookId = bdao.saveBookWithID(book);
+		book.setBookId(bookId);
+		badao.insertBookAuthors(book);
+		bgdao.insertBookGenres(book);
 	}
 	
 	public List<LibraryBranch> viewLibraryBranch() throws ClassNotFoundException, SQLException{
-		Connection conn = util.getConnection();
-		try{
-			LibraryBranchDAO lbdao = new LibraryBranchDAO(conn);
-			return lbdao.readAll();
-		}catch (Exception e){
-			e.printStackTrace();
-		}finally{
-			conn.close();
-		}
-		return null;
+		return ldao.readAll();
 	}
 	
 	public BookCopies viewBookCopiesByID(Integer bookId, Integer branchId) throws ClassNotFoundException, SQLException{
 		BookCopies bc = new BookCopies();
 		bc.setBookId(bookId);
 		bc.setBranchId(branchId);
-		Connection conn = util.getConnection();
-		try{
-			BookCopiesDAO bcdao = new BookCopiesDAO(conn);
-			return bcdao.readOne(bc);
-		}catch (Exception e){
-			e.printStackTrace();
-		}finally{
-			conn.close();
-		}
-		return null;
+		return bcdao.readOne(bc);
 	}
-	
-	
 	
 	public Book viewBookByID(Integer bookId) throws ClassNotFoundException, SQLException{
 		Book b = new Book();
 		b.setBookId(bookId);
-		Connection conn = util.getConnection();
-		try{
-			BookDAO bdao = new BookDAO(conn);
-			return bdao.readOne(b);
-		}catch (Exception e){
-			e.printStackTrace();
-		}finally{
-			conn.close();
-		}
-		return null;
+		return bdao.readOne(b);
 	}
 	
 	public List<Book> viewBooksNotInBranch(int branchId) throws ClassNotFoundException, SQLException{
-		Connection conn = util.getConnection();
-		try{
-			BookDAO bdao = new BookDAO(conn);
-			return bdao.readBooksNotInBranch(branchId);
-		}catch (Exception e){
-			e.printStackTrace();
-		}finally{
-			conn.close();
-		}
-		return null;
+		return bdao.readBooksNotInBranch(branchId);
 	}
 	
 	public List<Publisher> viewPublishers() throws ClassNotFoundException, SQLException{
-		Connection conn = util.getConnection();
-		try{
-			PublisherDAO pdao = new PublisherDAO(conn);
-			return pdao.readAll();
-		}catch (Exception e){
-			e.printStackTrace();
-		}finally{
-			conn.close();
-		}
-		return null;	
+		return pdao.readAll();	
 	}
 	
 	public List<Genre> viewGenres() throws ClassNotFoundException, SQLException{
-		Connection conn = util.getConnection();
-		try{
-			GenreDAO gdao = new GenreDAO(conn);
-			return gdao.readAll();
-		}catch (Exception e){
-			e.printStackTrace();
-		}finally{
-			conn.close();
-		}
-		return null;	
+		return gdao.readAll();	
 	}
 	
 	public List<Genre> viewGenresFirstLevel() throws ClassNotFoundException, SQLException{
-		Connection conn = util.getConnection();
-		try{
-			GenreDAO gdao = new GenreDAO(conn);
-			return gdao.readAllFirstLevel();
-		}catch (Exception e){
-			e.printStackTrace();
-		}finally{
-			conn.close();
-		}
-		return null;	
+		return gdao.readAllFirstLevel();	
 	}
 	
 	public List<Borrower> viewBorrowers() throws ClassNotFoundException, SQLException{
-		Connection conn = util.getConnection();
-		try{
-			BorrowerDAO bodao = new BorrowerDAO(conn);
-			return bodao.readAll();
-		}catch (Exception e){
-			e.printStackTrace();
-		}finally{
-			conn.close();
-		}
-		return null;
+		return bodao.readAll();
 	}
 	
 	public List<Author> viewAuthorsBySearchString(String searchString, int pageNo) throws ClassNotFoundException, SQLException{
-		Connection conn = util.getConnection();
-		try{
-			AuthorDAO adao = new AuthorDAO(conn);
-			return adao.readBySearchString(searchString, pageNo);
-		}catch (Exception e){
-			e.printStackTrace();
-		}finally{
-			conn.close();
-		}
-		return null;
+		return adao.readBySearchString(searchString, pageNo);
 	}
 	
 	public List<Book> viewBooksBySearchString(String searchString, int pageNo) throws ClassNotFoundException, SQLException {
-		Connection conn = util.getConnection();
-		try{
-			BookDAO bdao = new BookDAO(conn);
-			return bdao.readBySearchString(searchString, pageNo);
-		}catch (Exception e){
-			e.printStackTrace();
-		}finally{
-			conn.close();
-		}
-		return null;
+		return bdao.readBySearchString(searchString, pageNo);
 	}
 	
 	
 	public List<Author> viewAuthorsFirstLevel(int pageNo) throws ClassNotFoundException, SQLException{
-		Connection conn = util.getConnection();
-		try{
-			AuthorDAO adao = new AuthorDAO(conn);
-			return adao.readAllFirstLevel(pageNo);
-		}catch (Exception e){
-			e.printStackTrace();
-		}finally{
-			conn.close();
-		}
-		return null;
+		return adao.readAllFirstLevel(pageNo);
 	}
 	
 	public Integer getAuthorsCount() throws ClassNotFoundException, SQLException{
-		Connection conn = util.getConnection();
-		try{
-			AuthorDAO adao = new AuthorDAO(conn);
-			return adao.getCount();
-		}catch (Exception e){
-			e.printStackTrace();
-		}finally{
-			conn.close();
-		}
-		return null;
+		return adao.getCount();
 	}
 	
 	public Integer getBooksCount() throws ClassNotFoundException, SQLException{
-		Connection conn = util.getConnection();
-		try{
-			BookDAO bdao = new BookDAO(conn);
-			return bdao.getCount();
-		}catch (Exception e){
-			e.printStackTrace();
-		}finally{
-			conn.close();
-		}
-		return null;
+		return bdao.getCount();
 	}
 	
 	public List<Author> viewAuthors(int pageNo) throws ClassNotFoundException, SQLException{
-		Connection conn = util.getConnection();
-		try{
-			AuthorDAO adao = new AuthorDAO(conn);
-			return adao.readAll(pageNo);
-		}catch (Exception e){
-			e.printStackTrace();
-		}finally{
-			conn.close();
-		}
-		return null;
+		return adao.readAll(pageNo);
 	}
 	
 	public List<Book> viewBooks(int pageNo) throws ClassNotFoundException, SQLException{
-		Connection conn = util.getConnection();
-		try{
-			BookDAO bdao = new BookDAO(conn);
-			return bdao.readAll(pageNo);
-		}catch (Exception e){
-			e.printStackTrace();
-		}finally{
-			conn.close();
-		}
-		return null;
+		return bdao.readAll(pageNo);
 	}	
 	
 	public Author viewAuthorByID(Integer authorID) throws ClassNotFoundException, SQLException{
 		Author a = new Author();
 		a.setAuthorId(authorID);
-		Connection conn = util.getConnection();
-		try{
-			AuthorDAO adao = new AuthorDAO(conn);
-			return adao.readOne(a);
-		}catch (Exception e){
-			e.printStackTrace();
-		}finally{
-			conn.close();
-		}
-		return null;
+		return adao.readOne(a);
 	}
 	
 	public LibraryBranch viewBranchById(Integer branchID) throws ClassNotFoundException, SQLException {
 		LibraryBranch l = new LibraryBranch();
 		l.setBranchId(branchID);
-		Connection conn = util.getConnection();
-		try{
-			LibraryBranchDAO lbdao = new LibraryBranchDAO(conn);
-			return lbdao.readOne(l);
-		}catch (Exception e){
-			e.printStackTrace();
-		}finally{
-			conn.close();
-		}
-		return null;
+		return ldao.readOne(l);
 	}
 
 	

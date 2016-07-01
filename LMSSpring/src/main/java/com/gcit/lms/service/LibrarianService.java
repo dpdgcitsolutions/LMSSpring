@@ -1,15 +1,21 @@
 package com.gcit.lms.service;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.gcit.lms.dao.AuthorDAO;
+import com.gcit.lms.dao.BookAuthorsDAO;
 import com.gcit.lms.dao.BookCopiesDAO;
 import com.gcit.lms.dao.BookDAO;
+import com.gcit.lms.dao.BookGenresDAO;
 import com.gcit.lms.dao.BookLoansDAO;
 import com.gcit.lms.dao.BorrowerDAO;
+import com.gcit.lms.dao.GenreDAO;
 import com.gcit.lms.dao.LibraryBranchDAO;
+import com.gcit.lms.dao.PublisherDAO;
 import com.gcit.lms.domain.Author;
 import com.gcit.lms.domain.Book;
 import com.gcit.lms.domain.BookCopies;
@@ -18,210 +24,111 @@ import com.gcit.lms.domain.Borrower;
 import com.gcit.lms.domain.LibraryBranch;
 
 public class LibrarianService {
-	ConnectionUtil util = new ConnectionUtil();	
+	@Autowired
+	AuthorDAO adao;
+	
+	@Autowired
+	BookDAO bdao;
+	
+	@Autowired
+	PublisherDAO pdao;
+	
+	@Autowired
+	GenreDAO gdao;
+	
+	@Autowired
+	BorrowerDAO bodao;
+	
+	@Autowired
+	BookAuthorsDAO badao;
+	
+	@Autowired
+	BookGenresDAO bgdao;
+	
+	@Autowired
+	BookCopiesDAO bcdao;
+	
+	@Autowired
+	LibraryBranchDAO ldao;
+	
+	@Autowired
+	BookLoansDAO bldao;
 
 	public LibraryBranch viewBranchById(Integer branchID) throws ClassNotFoundException, SQLException {
 		LibraryBranch l = new LibraryBranch();
 		l.setBranchId(branchID);
-		Connection conn = util.getConnection();
-		try{
-			LibraryBranchDAO lbdao = new LibraryBranchDAO(conn);
-			return lbdao.readOne(l);
-		}catch (Exception e){
-			e.printStackTrace();
-		}finally{
-			conn.close();
-		}
-		return null;
+		return ldao.readOne(l);
 	}
 	
+	@Transactional
 	public void createBookCopies(BookCopies bc) throws ClassNotFoundException, SQLException{
-		Connection conn = util.getConnection();
-		try{
-			BookCopiesDAO bcdao = new BookCopiesDAO(conn);
-			bcdao.insertBookCopies(bc);
-			conn.commit();
-		}catch (Exception e){
-			e.printStackTrace();
-			conn.rollback();
-		}finally{
-			conn.close();
-		}
+		bcdao.insertBookCopies(bc);
 	}
 	
+	@Transactional
 	public void editBookCopies(BookCopies bc) throws ClassNotFoundException, SQLException{
-		Connection conn = util.getConnection();
-		try{
-			BookCopiesDAO bcdao = new BookCopiesDAO(conn);
-			bcdao.updateBookCopies(bc);
-			conn.commit();
-		}catch (Exception e){
-			e.printStackTrace();
-			conn.rollback();
-		}finally{
-			conn.close();
-		}
+		bcdao.updateBookCopies(bc);
 	}
 	
+	@Transactional
 	public void editBranch(LibraryBranch lib) throws ClassNotFoundException, SQLException{
-		Connection conn = util.getConnection();
-		try{
-			LibraryBranchDAO ldao = new LibraryBranchDAO(conn);
-			ldao.updateLibraryBranch(lib);
-			conn.commit();
-		}catch (Exception e){
-			e.printStackTrace();
-			conn.rollback();
-		}finally{
-			conn.close();
-		}
+		ldao.updateLibraryBranch(lib);
 	}
 	
 	public Borrower viewBorrowerByCardNo(int cardNo) throws ClassNotFoundException, SQLException{
-		Connection conn = util.getConnection();
-		try{
-			Borrower b = new Borrower();
-			b.setCardNo(cardNo);
-			BorrowerDAO bodao = new BorrowerDAO(conn);
-			return bodao.readOne(b);
-		}catch (Exception e){
-			e.printStackTrace();
-		}finally{
-			conn.close();
-		}
-		return null;
+		Borrower b = new Borrower();
+		b.setCardNo(cardNo);
+		return bodao.readOne(b);
 	}
 	
 	public List<LibraryBranch> viewLibraryBranch() throws ClassNotFoundException, SQLException{
-		Connection conn = util.getConnection();
-		try{
-			LibraryBranchDAO lbdao = new LibraryBranchDAO(conn);
-			return lbdao.readAll();
-		}catch (Exception e){
-			e.printStackTrace();
-		}finally{
-			conn.close();
-		}
-		return null;
+		return ldao.readAll();
 	}
 	
 	public List<Book> viewBooksNotInBranch(int branchId) throws ClassNotFoundException, SQLException{
-		Connection conn = util.getConnection();
-		try{
-			BookDAO bdao = new BookDAO(conn);
-			return bdao.readBooksNotInBranch(branchId);
-		}catch (Exception e){
-			e.printStackTrace();
-		}finally{
-			conn.close();
-		}
-		return null;
+		return bdao.readBooksNotInBranch(branchId);
 	}
 	
 	public List<Book> viewBooks(int pageNo) throws ClassNotFoundException, SQLException{
-		Connection conn = util.getConnection();
-		try{
-			BookDAO bdao = new BookDAO(conn);
-			return bdao.readAll(pageNo);
-		}catch (Exception e){
-			e.printStackTrace();
-		}finally{
-			conn.close();
-		}
-		return null;
+		return bdao.readAll(pageNo);
 	}
 	
 	public List<BookLoans> viewBookLoansByBranch(int branchId) throws ClassNotFoundException, SQLException{
 		BookLoans bl = new BookLoans();
 		bl.setBranchId(branchId);
-		Connection conn = util.getConnection();
-		try{
-			BookLoansDAO bldao = new BookLoansDAO(conn);
-			return bldao.readAllByBranch(branchId);
-		}catch (Exception e){
-			e.printStackTrace();
-		}finally{
-			conn.close();
-		}
-		return null;
+		return bldao.readAllByBranch(branchId);
 	}
 	
 	public List<BookCopies> viewBookCopiesByBranch(int branchId) throws ClassNotFoundException, SQLException{
 		BookCopies bc = new BookCopies();
 		bc.setBranchId(branchId);
-		Connection conn = util.getConnection();
-		try{
-			BookCopiesDAO bcdao = new BookCopiesDAO(conn);
-			return bcdao.readAllByBranch(branchId);
-		}catch (Exception e){
-			e.printStackTrace();
-		}finally{
-			conn.close();
-		}
-		return null;
+		return bcdao.readAllByBranch(branchId);
 	}
 	
 	public BookCopies viewBookCopiesByID(Integer bookId, Integer branchId) throws ClassNotFoundException, SQLException{
 		BookCopies bc = new BookCopies();
 		bc.setBookId(bookId);
 		bc.setBranchId(branchId);
-		Connection conn = util.getConnection();
-		try{
-			BookCopiesDAO bcdao = new BookCopiesDAO(conn);
-			return bcdao.readOne(bc);
-		}catch (Exception e){
-			e.printStackTrace();
-		}finally{
-			conn.close();
-		}
-		return null;
+		return bcdao.readOne(bc);
 	}
 	
 	public Book viewBookByID(Integer bookId) throws ClassNotFoundException, SQLException{
 		Book b = new Book();
 		b.setBookId(bookId);
-		Connection conn = util.getConnection();
-		try{
-			BookDAO bdao = new BookDAO(conn);
-			return bdao.readOne(b);
-		}catch (Exception e){
-			e.printStackTrace();
-		}finally{
-			conn.close();
-		}
-		return null;
+		return bdao.readOne(b);
 	}
 	
 	public List<Borrower> viewBorrowerByBranch(LibraryBranch lib) throws ClassNotFoundException, SQLException{
-		Connection conn = util.getConnection();
-		try{
-			BorrowerDAO bodao = new BorrowerDAO(conn);
-			return bodao.readFromBranch(lib);
-		}catch (Exception e){
-			e.printStackTrace();
-		}finally{
-			conn.close();
-		}
-		return null;
+		return bodao.readFromBranch(lib);
 	}
 
+	@Transactional
 	public void extendDueDate(int bookId, int branchId, int cardNo, String dateOut) throws ClassNotFoundException, SQLException {
-		Connection conn = util.getConnection();
-		try{
-			BookLoansDAO bldao = new BookLoansDAO(conn);
-			BookLoans bl = new BookLoans();
-			bl.setBookId(bookId);
-			bl.setBranchId(branchId);
-			bl.setCardNo(cardNo);
-			bl.setDateOut(dateOut);
-			bldao.updateDueDate(bl);
-			conn.commit();
-		}catch (Exception e){
-			e.printStackTrace();
-			conn.rollback();
-		}finally{
-			conn.close();
-		}
-		
+		BookLoans bl = new BookLoans();
+		bl.setBookId(bookId);
+		bl.setBranchId(branchId);
+		bl.setCardNo(cardNo);
+		bl.setDateOut(dateOut);
+		bldao.updateDueDate(bl);
 	}
 }

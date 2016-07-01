@@ -1,30 +1,26 @@
 package com.gcit.lms.dao;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
+
+import org.springframework.jdbc.core.ResultSetExtractor;
 
 import com.gcit.lms.domain.Author;
 import com.gcit.lms.domain.Book;
+import com.gcit.lms.domain.BookAuthors;
 
-public class BookAuthorsDAO extends BaseDAO {
-
-	public BookAuthorsDAO(Connection conn) {
-		super(conn);
-		// TODO Auto-generated constructor stub
-	}
+public class BookAuthorsDAO extends BaseDAO implements ResultSetExtractor<List<BookAuthors>>{
 
 	public void insertBookAuthors(Book book) throws ClassNotFoundException, SQLException{
 		for(Author a: book.getAuthors()) {
-			save("insert into tbl_book_authors (bookId, authorId) values (?,?)", new Object[] {book.getBookId(), a.getAuthorId()});
+			template.update("insert into tbl_book_authors (bookId, authorId) values (?,?)", new Object[] {book.getBookId(), a.getAuthorId()});
 		}
 	}
 	
 	public void deleteBookAuthors(Book book) throws ClassNotFoundException, SQLException{
-		save("delete from tbl_book_authors where bookId = ?", new Object[] {book.getBookId()});
+		template.update("delete from tbl_book_authors where bookId = ?", new Object[] {book.getBookId()});
 	}
 //	public void updateBookAuthors(Book book, int authorId) throws ClassNotFoundException, SQLException{
 //		for( Author a : book.getAuthors() )
@@ -86,14 +82,9 @@ public class BookAuthorsDAO extends BaseDAO {
 //		return bkau;
 //	}
 
-	@Override
-	public List<?> extractDataFirstLevel(ResultSet rs) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
-	public List<?> extractData(ResultSet rs) throws SQLException {
+	public List<BookAuthors> extractData(ResultSet rs) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
 	}

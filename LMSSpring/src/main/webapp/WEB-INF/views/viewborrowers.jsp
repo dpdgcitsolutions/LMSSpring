@@ -4,20 +4,21 @@
     <%@ page import="java.util.ArrayList" %>
     <%@ page import="com.gcit.lms.service.AdministrativeService" %>
     <%@ page import="com.gcit.lms.domain.Borrower" %>
-    <%AdministrativeService service = new AdministrativeService(); 
+    <%
+    AdministrativeService aService = (AdministrativeService)request.getAttribute("service");
     List<Borrower> bs = new ArrayList<Borrower>();
-    bs = service.viewBorrowers();
+    bs = aService.viewBorrowers();
     %>
 <%@ include file="include.html" %>
 <div class="users">
 	<div class="container">
-		<a style="font-size:20px;" href="../admin">Back</a><br/>
+		<a style="font-size:20px;" href="admin">Back</a><br/>
 	
 <h3>List of Branches</h3>
 <table class="table table-hover">
 	<thead>
 	<tr>
-		<th>Borrower Card Number</th>
+		<th>Card Number</th>
 		<th>Borrower Name</th>
 		<th>Borrower Address</th>
 		<th>Borrower Phone</th>

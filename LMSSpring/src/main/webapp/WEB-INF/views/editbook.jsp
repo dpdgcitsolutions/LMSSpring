@@ -8,15 +8,19 @@
 <%@ page import="com.gcit.lms.domain.Genre" %>
 <%@ page import="com.gcit.lms.domain.Publisher" %>
 <%
-	AdministrativeService service = new AdministrativeService(); 
+	AdministrativeService aService = (AdministrativeService)request.getAttribute("service");
+	Integer bookId = Integer.parseInt(request.getAttribute("bookId").toString());
 	List<Author> authors = new ArrayList<Author>();
-	authors = service.viewAuthorsFirstLevel(0);
+	authors = aService.viewAuthors(0);
 	List<Genre> genres = new ArrayList<Genre>();
-	genres = service.viewGenresFirstLevel();
+	genres = aService.viewGenres();
+	List<Genre> bookGenres = new ArrayList<Genre>();
+	bookGenres = aService.viewGenresByBook(0, bookId);
 	List<Publisher> publishers = new ArrayList<Publisher>();
-	publishers = service.viewPublishers();
-	Integer bookId = Integer.parseInt(request.getParameter("bookId"));
-	Book b = service.viewBookByID(bookId);
+	publishers = aService.viewPublishers();
+	Book b = aService.viewBookByID(bookId);
+	List<Author> bookAuthors = new ArrayList<Author>();
+	bookAuthors = aService.viewAuthorsByBook(0, bookId);
 %>
 <!DOCTYPE html>
 <div class="users">
@@ -51,7 +55,7 @@
 	      <div class="col-sm-10">
 	      <select id="authorId" name="authorId">
 			<% for( Author a : authors ) { %>
-				<% if( b.getAuthors().contains(a) ) {%>
+				<% if( bookAuthors.contains(a) ) {%>
 					<option value=<%=a.getAuthorId() %> selected><%=a.getAuthorName()%></option>
 				<%} else { %>
 					<option value=<%=a.getAuthorId() %>><%=a.getAuthorName()%></option>
@@ -64,7 +68,7 @@
 	      <div class="col-sm-10">
 	      <select id="genreId" name="genreId">
 			<% for( Genre g : genres) { %>
-				<% if( b.getGenres().contains(g) ) { %>
+				<% if( bookGenres.contains(g) ) { %>
 					<option value=<%=g.getGenre_id() %> selected><%=g.getGenre_name()%></option>
 				<%} else{ %>
 					<option value=<%=g.getGenre_id() %>><%=g.getGenre_name()%></option>

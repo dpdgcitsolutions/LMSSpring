@@ -68,7 +68,7 @@ public class AdministrativeService {
 	
 	@Transactional
 	public void editBorrower(Borrower bo) throws ClassNotFoundException, SQLException{
-		bodao.updateBorrower(bo);
+		bodao.updateBorrower(bo);;
 	}
 	
 	@Transactional
@@ -144,6 +144,26 @@ public class AdministrativeService {
 		return bdao.readBooksNotInBranch(branchId);
 	}
 	
+	public List<Book> viewBooksByAuthor(int pageNo, int authorId) throws ClassNotFoundException, SQLException{
+		return bdao.readBooksByAuthor(pageNo, authorId);
+	}
+	
+	public List<Book> viewBooksByBranch(int pageNo, int branchId) throws ClassNotFoundException, SQLException{
+		return bdao.readBooksByBranch(pageNo, branchId);
+	}
+	
+	public List<Author> viewAuthorsByBook(int pageNo, int bookId) throws ClassNotFoundException, SQLException{
+		return adao.readAuthorsByBook(0, bookId);
+	}
+
+	public List<Genre> viewGenresByBook(int pageNo, int bookId) throws ClassNotFoundException, SQLException{
+		return gdao.readGenresByBook(bookId);
+	}
+	
+	public List<Publisher> viewPublishersByBook(int pageNo, int bookId) throws ClassNotFoundException, SQLException{
+		return pdao.readPublisherByBook(bookId);
+	}
+	
 	public List<Publisher> viewPublishers() throws ClassNotFoundException, SQLException{
 		return pdao.readAll();	
 	}
@@ -152,9 +172,9 @@ public class AdministrativeService {
 		return gdao.readAll();	
 	}
 	
-	public List<Genre> viewGenresFirstLevel() throws ClassNotFoundException, SQLException{
-		return gdao.readAllFirstLevel();	
-	}
+//	public List<Genre> viewGenresFirstLevel() throws ClassNotFoundException, SQLException{
+//		return gdao.readAllFirstLevel();	
+//	}
 	
 	public List<Borrower> viewBorrowers() throws ClassNotFoundException, SQLException{
 		return bodao.readAll();
@@ -169,9 +189,9 @@ public class AdministrativeService {
 	}
 	
 	
-	public List<Author> viewAuthorsFirstLevel(int pageNo) throws ClassNotFoundException, SQLException{
-		return adao.readAllFirstLevel(pageNo);
-	}
+//	public List<Author> viewAuthorsFirstLevel(int pageNo) throws ClassNotFoundException, SQLException{
+//		return adao.readAllFirstLevel(pageNo);
+//	}
 	
 	public Integer getAuthorsCount() throws ClassNotFoundException, SQLException{
 		return adao.getCount();
@@ -200,7 +220,4 @@ public class AdministrativeService {
 		l.setBranchId(branchID);
 		return ldao.readOne(l);
 	}
-
-	
-
 }

@@ -4,9 +4,10 @@
     <%@ page import="java.util.ArrayList" %>
     <%@ page import="com.gcit.lms.service.AdministrativeService" %>
     <%@ page import="com.gcit.lms.domain.LibraryBranch" %>
-    <%AdministrativeService service = new AdministrativeService(); 
+    <%
+    AdministrativeService aService = (AdministrativeService)request.getAttribute("service");
     List<LibraryBranch> libs = new ArrayList<LibraryBranch>();
-    libs = service.viewLibraryBranch();
+    libs = aService.viewLibraryBranch();
     %>
 <%@ include file="include.html" %>
 <div class="container">
@@ -18,7 +19,7 @@
 
 <div class="users">
 	<div class="container">
-		<a style="font-size:20px;" href="../admin">Back</a><br/>
+		<a style="font-size:20px;" href="admin">Back</a><br/>
 	
 <h3>List of Branches</h3>
 <table class="table table-hover">
@@ -36,9 +37,9 @@
 		<tr>
 			<td><%=l.getBranchName() %></td>
 			<td><%=l.getBranchAddress() %></td>
-			<td><button type="button" class="btn btn-success" onclick="javascript:location.href='branch.jsp?branchId=<%=l.getBranchId()%>'">SELECT</button></td>
+			<td><button type="button" class="btn btn-success" onclick="javascript:location.href='selectBranch?branchId=<%=l.getBranchId()%>'">SELECT</button></td>
 			<td><button type="button" class="btn btn-warning" data-toggle="modal" 
-			data-target="#editBranchModal" href='editbranch.jsp?branchId=<%=l.getBranchId() %>'>EDIT</button></td>
+			data-target="#editBranchModal" href='prepareEditBranch?branchId=<%=l.getBranchId() %>'>EDIT</button></td>
 			<td><button type="button" class="btn btn-danger" onclick="javascript:location.href='deleteBranch?branchId=<%=l.getBranchId()%>'">DELETE</button></td>
 			</tr>
 	<%} %>

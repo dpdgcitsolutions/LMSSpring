@@ -4,10 +4,10 @@
     <%@ page import="java.util.ArrayList" %>
     <%@ page import="com.gcit.lms.service.AdministrativeService" %>
     <%@ page import="com.gcit.lms.domain.LibraryBranch" %>
-    <%AdministrativeService service = new AdministrativeService(); 
+    <%AdministrativeService aService = (AdministrativeService)request.getAttribute("service"); 
     List<LibraryBranch> libs = new ArrayList<LibraryBranch>();
-    libs = service.viewLibraryBranch();
-    Integer branchId = Integer.parseInt(request.getParameter("branchId"));
+    libs = aService.viewLibraryBranch();
+    Integer branchId = Integer.parseInt(request.getAttribute("branchId").toString());
     %>
 
 <%@ include file="include.html" %>
@@ -22,11 +22,11 @@
 
 <div class="users">
     <div class="container">
-<a href="viewbranches.jsp" style="font-size:20px;">Back</a><br/><br/>
+<a href="viewBranches" style="font-size:20px;">Back</a><br/><br/>
 
-<a href="showbooks.jsp?branchId=<%=branchId%>">Show Books in Branch</a></br>
-<a href="addbook.jsp?branchId=<%=branchId%>">Add Book to Branch</a></br>
-<a href="addbook.jsp?branchId=<%=branchId%>">Add Borrower to Branch</a>
+<a href="showBooks?branchId=<%=branchId%>">Show Books in Branch</a></br>
+<a href="addBook?branchId=<%=branchId%>">Add Book to Branch</a></br>
+<a href="addBorrower?branchId=<%=branchId%>">Add Borrower to Branch</a>
 
 	</div>
 </div>

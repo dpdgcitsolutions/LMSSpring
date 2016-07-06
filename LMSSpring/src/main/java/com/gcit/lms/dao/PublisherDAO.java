@@ -20,6 +20,16 @@ public class PublisherDAO extends BaseDAO implements ResultSetExtractor<List<Pub
 	public List<Publisher> readAll() throws ClassNotFoundException, SQLException{
 		return template.query("select * from tbl_publisher", this);
 	}
+	
+	public List<Publisher> readPublisherByBook(int bookId) throws ClassNotFoundException, SQLException{
+		List<Publisher> pubs = template.query("select * from tbl_publisher where publisherId in (select pubId from tbl_book where bookId = ?)", new Object[]{bookId}, this);
+		if( pubs.isEmpty() ){
+			Publisher p = new Publisher();
+			p.setPublisherName("N/A");
+			pubs.add(p);
+		}
+		return pubs;
+	}
 
 	@Override
 	public List<Publisher> extractData(ResultSet rs) throws SQLException {

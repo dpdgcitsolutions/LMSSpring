@@ -6,17 +6,16 @@
 <%@ page import="com.gcit.lms.domain.Book"%>
 <%@ page import="com.gcit.lms.domain.BookCopies"%>
 <%
-AdministrativeService service = new AdministrativeService();
-	Integer bookId = Integer.parseInt(request.getParameter("bookId"));
-	Integer branchId = Integer.parseInt(request.getParameter("branchId"));
-	BookCopies bc = service.viewBookCopiesByID(bookId, branchId);
-	Book b = service.viewBookByID(bookId);
+	AdministrativeService aService = (AdministrativeService)request.getAttribute("service");
+	Integer bookId = Integer.parseInt(request.getAttribute("bookId").toString());
+	Integer branchId = Integer.parseInt(request.getAttribute("branchId").toString());
+	BookCopies bc = aService.viewBookCopiesByID(bookId, branchId);
+	Book b = aService.viewBookByID(bookId);
 %>
 <!DOCTYPE html>
 <h3>Hello Librarian! Edit book details</h3>
 	<form action="editBookCopies" method="post">
-		Edit Book Name:
-		<input type="text" name="bookName" value='<%=b.getTitle()%>'></br>
+		<strong><%=b.getTitle() %></strong></br>
 		Edit Number of Copies:
 		<input type="text" name="numCopies" value='<%=bc.getNoOfCopies()%>'>
 		<input type="hidden" name="bookId" value='<%=bc.getBookId()%>'>

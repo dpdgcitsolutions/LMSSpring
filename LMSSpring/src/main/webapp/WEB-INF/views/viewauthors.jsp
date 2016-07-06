@@ -6,8 +6,8 @@
     <%@ page import="com.gcit.lms.service.AdministrativeService" %>
     <%@ page import="com.gcit.lms.domain.Author" %>
 	<%
-	AdministrativeService service = new AdministrativeService();
-	Integer count = service.getAuthorsCount();
+	AdministrativeService aService = (AdministrativeService)request.getAttribute("service");
+	Integer count = aService.getAuthorsCount();
 	Integer pageCount = 0;
 	if(count!=null && count>0){
 		int rem = count % 10;
@@ -18,11 +18,7 @@
 		}
 	}
 	List<Author> authors = new ArrayList<Author>();
-	if(request.getAttribute("authors")!=null){
-		authors = (List<Author>)request.getAttribute("authors");	
-	}else{
-		authors = service.viewAuthorsBySearchString("", 1);
-	}
+	authors = aService.viewAuthorsBySearchString("", 1);
     %>
 
 <div class="users">
@@ -40,7 +36,7 @@ function pageAuthors(val){
 }
 	
 	function searchAuthors(){
-		$.ajax({url: "searchAuthors", data: { searchString : $('#searchString').val()},
+		$.ajax({url: "searchAuthors", data: { searchString : $('#searchString').val() },
 			})
 			  .done(function( data ) {
 			    $('#authorsTable').html(data);
@@ -75,9 +71,9 @@ function pageAuthors(val){
 	<%for(Author a: authors){ %>
 		<tr>
 			<td><%=a.getAuthorName() %></td>
-			<td><%=a.getBooks().get(0).getTitle() %></td>
+			<td><%=aService.viewBooksByAuthor(0, a.getAuthorId()).get(0).getTitle() %></td>
 			<td><button type="button" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#authorModal"
-							href='editauthor.jsp?authorId=<%=a.getAuthorId()%>'>EDIT</button></td>
+							href='prepareEditAuthor?authorId=<%=a.getAuthorId()%>'>EDIT</button></td>
 			<td><button type="button" class="btn btn-danger" onclick="javascript:location.href='deleteAuthor?authorId=<%=a.getAuthorId()%>'">DELETE</button></td>
 			</tr>
 	<%} %>

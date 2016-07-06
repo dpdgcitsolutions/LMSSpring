@@ -1,14 +1,17 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ page session="false" %>
-<html>
-<head>
-	<title>Home</title>
-</head>
-<body>
-<h1>
-	Hello world!  
-</h1>
+<%@ include file="include.html" %>
+<div class="container">
+ 	<div class="jumbotron">
+		<h2>GCIT Library Management System</h2>
+		<p>Choose your role</p>
+	</div>
+</div>
 
-<P>  The time on the server is ${serverTime}. </P>
+<body>
+	<div class="users">
+        <div class="container">
+            <a href="admin"><p>Administrator</p></a>
+            <a href="librarian"><p>Librarian</p></a>
+            <a href="borrower"><p>Borrower</p></a>
+        </div>
+    </div>
 </body>
-</html>

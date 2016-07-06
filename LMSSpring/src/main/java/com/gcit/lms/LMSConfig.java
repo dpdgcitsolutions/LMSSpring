@@ -23,7 +23,6 @@ import com.gcit.lms.service.BorrowerService;
 import com.gcit.lms.service.LibrarianService;
 
 @EnableTransactionManagement
-
 @Configuration
 public class LMSConfig {
 	private static String driver= "com.mysql.jdbc.Driver";

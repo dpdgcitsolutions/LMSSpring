@@ -4,9 +4,10 @@
     <%@ page import="java.util.ArrayList" %>
     <%@ page import="com.gcit.lms.service.AdministrativeService" %>
     <%@ page import="com.gcit.lms.domain.Book" %>
-    <%AdministrativeService service = new AdministrativeService(); 
+    <%
+    AdministrativeService aService = (AdministrativeService)request.getAttribute("service");
     List<Book> books = new ArrayList<Book>();
-    Integer count = service.getBooksCount();
+    Integer count = aService.getBooksCount();
 	Integer pageCount = 0;
 	if(count!=null && count>0){
 		int rem = count % 10;
@@ -16,16 +17,12 @@
 			pageCount = count/10+1;
 		}
 	}
-	if(request.getAttribute("books")!=null){
-		books = (List<Book>)request.getAttribute("books");	
-	}else{
-		books = service.viewBooksBySearchString("", 1);
-	}
+	books = aService.viewBooksBySearchString("", 1);
     %>
 <%@ include file="include.html" %>
 <div class="users">
 	<div class="container">
-		<a style="font-size:20px;" href="../admin">Back</a><br/>
+		<a style="font-size:20px;" href="admin">Back</a><br/>
 		
 <script>
 function pageBooks(val){
@@ -54,7 +51,7 @@ function pageBooks(val){
 </nav>
 
 <form action="searchBook" method="post">
-	<input type="text" name="searchString" id="searchString" placeholder="Enter Author Name" onkeyup="searchBooks()"/>
+	<input type="text" name="searchString" id="searchString" placeholder="Enter Book Name" onkeyup="searchBooks()"/>
 </form>
 	
 
@@ -75,11 +72,11 @@ function pageBooks(val){
 		<% for(Book b : books) {%>
 			<tr>
 				<td><%=b.getTitle() %></td>
-				<td><%=b.getAuthors().get(0).getAuthorName() %></td>
-				<td><%=b.getGenres().get(0).getGenre_name() %></td>
-				<td><%=b.getPublisher().getPublisherName() %></td>
+				<td><%=aService.viewAuthorsByBook(0, b.getBookId()).get(0).getAuthorName() %></td>
+				<td><%=aService.viewGenresByBook(0, b.getBookId()).get(0).getGenre_name() %></td>
+				<td><%=aService.viewPublishersByBook(0, b.getBookId()).get(0).getPublisherName() %></td>
 				<td><button type="button" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#bookModal"
-							href='editbook.jsp?bookId=<%=b.getBookId()%>'>EDIT</button></td>
+							href='prepareEditBook?bookId=<%=b.getBookId()%>'>EDIT</button></td>
 				<td><button type="button" class="btn btn-danger" onclick="javascript:location.href='deleteAuthor?authorId=<%=b.getBookId()%>'">DELETE</button></td>
 			</tr>
 			<% } %>

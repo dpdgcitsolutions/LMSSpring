@@ -7,13 +7,13 @@
     <%@ page import="com.gcit.lms.domain.Author" %>
     <%@ page import="com.gcit.lms.domain.Genre" %>
     <%@ page import="com.gcit.lms.domain.Publisher" %>
-    <%AdministrativeService service = new AdministrativeService(); 
+    <%AdministrativeService aService = (AdministrativeService)request.getAttribute("service");
     List<Author> authors = new ArrayList<Author>();
-    authors = service.viewAuthors(0);
+    authors = aService.viewAuthors(0);
     List<Genre> genres = new ArrayList<Genre>();
-    genres = service.viewGenres();
+    genres = aService.viewGenres();
     List<Publisher> publishers = new ArrayList<Publisher>();
-    publishers = service.viewPublishers();%>
+    publishers = aService.viewPublishers();%>
     
 <%@ include file="include.html" %>
 
@@ -24,7 +24,7 @@
 	
 	
 	<h3 class="title">Author</h3>
-	<form role="form" class="form-horizontal" action="addStuffs" method="post">
+	<form role="form" class="form-horizontal" action="addAuthor" method="post">
 	    <div class="form-group">
 	      <label class="control-label col-sm-2" for="author">Name:</label>
 	      <div class="col-sm-10">
@@ -39,7 +39,7 @@
 	</form><br/>
 	
 	<h3 class="title">Book</h3>
-	<form role="form" class="form-horizontal" action="addStuffs" method="post">
+	<form role="form" class="form-horizontal" action="addBook" method="post">
 		<div class="form-group">
 	      <label class="control-label col-sm-2" for="book">Title:</label>
 	      <div class="col-sm-10">
@@ -84,7 +84,7 @@
 	</form><br/>
 	
 	<h3 class="title">Genre</h3>
-	<form role="form" class="form-horizontal" action="addStuffs" method="post">
+	<form role="form" class="form-horizontal" action="addGenre" method="post">
 	 	<div class="form-group">
 	      <label class="control-label col-sm-2" for="genre">Genre:</label>
 	      <div class="col-sm-10">
@@ -99,7 +99,7 @@
 	</form><br/>
 	
 	<h3 class="title">Publisher</h3>
-	<form role="form" class="form-horizontal" action="addStuffs" method="post">
+	<form role="form" class="form-horizontal" action="addPublisher" method="post">
 		<div class="form-group">
 	      	<label class="control-label col-sm-2" for="publisher">Name:</label>
 	      	<div class="col-sm-10">

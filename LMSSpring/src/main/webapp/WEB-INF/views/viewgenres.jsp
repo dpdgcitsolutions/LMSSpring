@@ -4,15 +4,16 @@
     <%@ page import="java.util.ArrayList" %>
     <%@ page import="com.gcit.lms.service.AdministrativeService" %>
     <%@ page import="com.gcit.lms.domain.Genre" %>
-    <%AdministrativeService service = new AdministrativeService(); 
+    <%
+    AdministrativeService aService = (AdministrativeService)request.getAttribute("service");
     List<Genre> genres = new ArrayList<Genre>();
-    genres = service.viewGenres();%>
+    genres = aService.viewGenres();%>
     
     
 <%@ include file="include.html" %>
 <div class="users">
 	<div class="container">
-		<a style="font-size:20px;" href="../admin">Back</a><br/>
+		<a style="font-size:20px;" href="admin">Back</a><br/>
 	
 <body>
 <h3>List of Genres</h3>

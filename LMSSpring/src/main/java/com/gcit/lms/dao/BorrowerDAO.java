@@ -6,12 +6,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.gcit.lms.domain.Book;
 import com.gcit.lms.domain.BookLoans;
 import com.gcit.lms.domain.Borrower;
 import com.gcit.lms.domain.LibraryBranch;
+
 
 public class BorrowerDAO extends BaseDAO implements ResultSetExtractor<List<Borrower>>{
 

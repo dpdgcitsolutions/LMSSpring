@@ -7,13 +7,14 @@
     <%@ page import="com.gcit.lms.domain.Author" %>
     <%@ page import="com.gcit.lms.domain.Genre" %>
     <%@ page import="com.gcit.lms.domain.Publisher" %>
-    <%AdministrativeService service = new AdministrativeService(); 
+    <%
+    AdministrativeService aService = (AdministrativeService)request.getAttribute("service");
     Integer branchId = Integer.parseInt(request.getParameter("branchId"));
-    List<Book> books = service.viewBooksNotInBranch(branchId);
+    List<Book> books = aService.viewBooksNotInBranch(branchId);
 %>
     
 <%@ include file="include.html" %>
-<a href="branch.jsp?branchId=<%=branchId %>" style="font-size:20px;">Back</a><br/><br/>
+<a href="branch?branchId=<%=branchId %>" style="font-size:20px;">Back</a><br/><br/>
 ${message}
 <form role="form" class="form-horizontal" action="addBookCopies" method="post">
     <div class="form-group">

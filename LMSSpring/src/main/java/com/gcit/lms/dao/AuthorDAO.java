@@ -30,16 +30,26 @@ public class AuthorDAO extends BaseDAO implements ResultSetExtractor<List<Author
 		template.update("update tbl_author set authorName = ? where authorId = ?", new Object[] {author.getAuthorName(), author.getAuthorId()});
 	}
 	
+	public List<Author> readAuthorsByBook(int pageNo, int bookId) throws ClassNotFoundException, SQLException{
+		setPageNo(pageNo);
+		List<Author> authors = template.query("select * from tbl_author where authorId in (select bookId from tbl_book_authors where bookId = ?)", new Object[]{bookId}, this);
+		if( authors.isEmpty() ){
+			Author a = new Author();
+			a.setAuthorName("N/A");
+			authors.add(a);
+		}
+		return authors;
+	}
 	
 	public List<Author> readAll(int pageNo) throws ClassNotFoundException, SQLException{
 		setPageNo(pageNo);
 		return template.query("select * from tbl_author", this);
 	}
 	
-	public List<Author> readAllFirstLevel(int pageNo) throws ClassNotFoundException, SQLException{
-		setPageNo(pageNo);
-		return template.query("select * from tbl_author", this);
-	}
+//	public List<Author> readAllFirstLevel(int pageNo) throws ClassNotFoundException, SQLException{
+//		setPageNo(pageNo);
+//		return template.query("select * from tbl_author", this);
+//	}
 	
 	public Author readOne(Author author) throws ClassNotFoundException, SQLException{
 		List<Author> authors = template.query("select * from tbl_author where authorId =?", new Object[] {author.getAuthorId()}, this);
@@ -59,7 +69,12 @@ public class AuthorDAO extends BaseDAO implements ResultSetExtractor<List<Author
 			searchString = "%%";
 		else
 			searchString = "%" + searchString + "%";
-		return template.query("select * from tbl_author where authorName like ?", new Object[] {searchString}, this);
+		String query = "select * from tbl_author where authorName like ?";
+		if(pageNo > 0){
+			int index = (pageNo-1)*10;
+			query += " LIMIT "+index+" , "+getPageSize();
+		}
+		return template.query(query, new Object[] {searchString}, this);
 	}
 
 	@Override

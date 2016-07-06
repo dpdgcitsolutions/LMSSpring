@@ -5,8 +5,8 @@
 <%@ page import="com.gcit.lms.service.AdministrativeService"%>
 <%@ page import="com.gcit.lms.domain.Author"%>
 <%
-	Integer authorId = Integer.parseInt(request.getParameter("authorId"));
-	AdministrativeService service = new AdministrativeService();
+	Integer authorId = Integer.parseInt(request.getAttribute("authorId").toString());
+	AdministrativeService service = (AdministrativeService)request.getAttribute("service");
 	Author a = service.viewAuthorByID(authorId);
 	
 %>

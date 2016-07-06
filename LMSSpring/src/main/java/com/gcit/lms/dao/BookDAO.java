@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.jdbc.core.ResultSetExtractor;
 
+import com.gcit.lms.domain.Author;
 import com.gcit.lms.domain.Book;
 import com.gcit.lms.domain.Publisher;
 
@@ -50,6 +51,28 @@ public class BookDAO extends BaseDAO implements ResultSetExtractor<List<Book>>{
 		return template.query("select * from tbl_book", this);
 	}
 	
+	public List<Book> readBooksByAuthor(int pageNo, int authorId) throws ClassNotFoundException, SQLException{
+		setPageNo(pageNo);
+		List<Book> books = template.query("select * from tbl_book where bookId in (select bookId from tbl_book_authors where authorId = ?)", new Object[]{authorId}, this);
+		if( books.isEmpty() ){
+			Book b = new Book();
+			b.setTitle("N/A");
+			books.add(b);
+		}
+		return books;
+	}
+	
+	public List<Book> readBooksByBranch(int pageNo, int branchId) throws ClassNotFoundException, SQLException{
+		setPageNo(pageNo);
+		List<Book> books = template.query("select * from tbl_book where bookId in (select bookId from tbl_book_copies where branchId = ?)", new Object[]{branchId}, this);
+		if( books.isEmpty() ){
+			Book b = new Book();
+			b.setTitle("N/A");
+			books.add(b);
+		}
+		return books;
+	}
+	
 	public List<Book> readBooksNotInBranch(int branchId) throws ClassNotFoundException, SQLException {
 		return template.query("select * from tbl_book where bookId not in (select bookId from tbl_book_copies where branchId = ?)", new Object[]{branchId}, this);
 	}
@@ -68,7 +91,12 @@ public class BookDAO extends BaseDAO implements ResultSetExtractor<List<Book>>{
 			searchString = "%%";
 		else
 			searchString = "%" + searchString + "%";
-		return template.query("select * from tbl_book where title like ?", new Object[] {searchString}, this);
+		String query = "select * from tbl_book where title like ?";
+		if(pageNo > 0){
+			int index = (pageNo-1)*10;
+			query += " LIMIT "+index+" , "+getPageSize();
+		}
+		return template.query(query, new Object[] {searchString}, this);
 	}
 	
 	public List<Book> viewAvailableBooks(Integer branchId) throws ClassNotFoundException, SQLException {

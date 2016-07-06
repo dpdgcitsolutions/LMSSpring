@@ -4,13 +4,14 @@
     <%@ page import="java.util.ArrayList" %>
     <%@ page import="com.gcit.lms.service.AdministrativeService" %>
     <%@ page import="com.gcit.lms.domain.Publisher" %>
-    <%AdministrativeService service = new AdministrativeService(); 
+    <%
+    AdministrativeService aService = (AdministrativeService)request.getAttribute("service");
     List<Publisher> pubs = new ArrayList<Publisher>();
-    pubs = service.viewPublishers();%>
+    pubs = aService.viewPublishers();%>
 <%@ include file="include.html" %>
 <div class="users">
 	<div class="container">
-		<a style="font-size:20px;" href="../admin">Back</a><br/>
+		<a style="font-size:20px;" href="admin">Back</a><br/>
 	
 <body>
 <h3>List of Publishers</h3>

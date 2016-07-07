@@ -3,8 +3,12 @@ package com.gcit.lms.service;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gcit.lms.dao.AuthorDAO;
@@ -23,9 +27,9 @@ import com.gcit.lms.domain.Borrower;
 import com.gcit.lms.domain.Genre;
 import com.gcit.lms.domain.LibraryBranch;
 import com.gcit.lms.domain.Publisher;
+import com.gcit.lms.library.hbm.entities.TblAuthor;
 
 
-@Service
 public class AdministrativeService {
 	
 	@Autowired
@@ -57,12 +61,17 @@ public class AdministrativeService {
 	
 	@Transactional
 	public void createAuthor(Author author) throws ClassNotFoundException, SQLException{
-		adao.insertAuthor(author);
+		//adao.insertAuthor(author);
+		Session session = getSession();
+		TblAuthor a = new TblAuthor(author.getAuthorName());
+		Transaction tx = session.beginTransaction();
+		session.save(a);
+		tx.commit();
+		session.close();
 	}
 	
 	@Transactional
 	public void createBorrower(Borrower bo) throws SQLException, ClassNotFoundException{
-		System.out.println("1");
 		bodao.insertBorrower(bo);
 	}
 	
@@ -219,5 +228,16 @@ public class AdministrativeService {
 		LibraryBranch l = new LibraryBranch();
 		l.setBranchId(branchID);
 		return ldao.readOne(l);
+	}
+	
+	public Session getSession() {
+		Configuration configuration = new Configuration();
+		configuration.configure("hibernate.cfg.xml");
+		StandardServiceRegistryBuilder ssrb = new StandardServiceRegistryBuilder()
+				.applySettings(configuration.getProperties());
+
+		SessionFactory sessionFactory = configuration.buildSessionFactory(ssrb.build());
+		Session session = sessionFactory.openSession();
+		return session;
 	}
 }

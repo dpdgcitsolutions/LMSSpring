@@ -62,7 +62,6 @@ public class AdministrativeService {
 	
 	@Transactional
 	public void createBorrower(Borrower bo) throws SQLException, ClassNotFoundException{
-		System.out.println("1");
 		bodao.insertBorrower(bo);
 	}
 	

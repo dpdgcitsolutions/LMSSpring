@@ -28,6 +28,10 @@ public class TblPublisher implements java.io.Serializable {
 
 	public TblPublisher() {
 	}
+	
+	public TblPublisher(int publisherId) {
+		this.publisherId = publisherId;
+	}
 
 	public TblPublisher(String publisherName) {
 		this.publisherName = publisherName;

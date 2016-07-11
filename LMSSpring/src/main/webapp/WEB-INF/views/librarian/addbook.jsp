@@ -7,15 +7,16 @@
     <%@ page import="com.gcit.lms.domain.Author" %>
     <%@ page import="com.gcit.lms.domain.Genre" %>
     <%@ page import="com.gcit.lms.domain.Publisher" %>
-    <%LibrarianService service = new LibrarianService(); 
+    <%
+    LibrarianService service = (LibrarianService)request.getAttribute("service");
     Integer branchId = Integer.parseInt(request.getParameter("branchId"));
     List<Book> books = service.viewBooksNotInBranch(branchId);
 %>
     
-<jsp:include page='include.html'></jsp:include>
+<%@ include file="include.html" %>
 <div class="users">
 	<div class="container">
-<a style="font-size:20px;" href="branch.jsp?branchId=<%=branchId%>">Back</a><br/>
+	<a href="selectBranch?branchId=<%=branchId %>" style="font-size:20px;">Back</a><br/><br/>
 ${message}
 <form role="form" class="form-horizontal" action="addBookCopies" method="post">
     <div class="form-group">
@@ -41,6 +42,8 @@ ${message}
       </div>
     </div>
 </form>
+</div>
+</div>
 
-</div>
-</div>
+</body>
+</html>

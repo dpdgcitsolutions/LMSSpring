@@ -2,15 +2,16 @@
     pageEncoding="ISO-8859-1"%>
     <%@ page import="java.util.List" %>
     <%@ page import="java.util.ArrayList" %>
-    <%@ page import="com.gcit.lms.service.AdministrativeService" %>
+    <%@ page import="com.gcit.lms.service.LibrarianService" %>
     <%@ page import="com.gcit.lms.domain.LibraryBranch" %>
-    <%AdministrativeService service = new AdministrativeService(); 
+    <%
+    LibrarianService service = (LibrarianService)request.getAttribute("service");
     List<LibraryBranch> libs = new ArrayList<LibraryBranch>();
     libs = service.viewLibraryBranch();
     Integer branchId = Integer.parseInt(request.getParameter("branchId"));
     %>
 
-<jsp:include page='include.html'></jsp:include>
+<%@ include file="include.html" %>
 <div class="container">
  	<div class="jumbotron">
 		<h2>GCIT Library Management System</h2>
@@ -24,9 +25,9 @@
     <div class="container">
 <a href="../librarian" style="font-size:20px;">Back</a><br/><br/>
 
-<a href="showbooks.jsp?branchId=<%=branchId%>">Show Books in Branch</a></br>
-<a href="addbook.jsp?branchId=<%=branchId%>">Add Book to Branch</a>
-<a href="showborrowers.jsp?branchId=<%=branchId%>">Show Borrowers</a>
+<a href="showBooks?branchId=<%=branchId%>">Show Books in Branch</a></br>
+<a href="addBook?branchId=<%=branchId%>">Add Book to Branch</a></br>
+<a href="showBorrowers?branchId=<%=branchId%>">Show Borrowers</a>
 
 	</div>
 </div>

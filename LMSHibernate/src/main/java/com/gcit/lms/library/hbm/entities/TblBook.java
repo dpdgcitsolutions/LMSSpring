@@ -75,12 +75,14 @@ public class TblBook implements java.io.Serializable {
 	public void setTblPublisher(TblPublisher tblPublisher) {
 		this.tblPublisher = tblPublisher;
 	}
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "authId")
-	public TblAuthor getTblAuthor() {
-		return this.tblAuthor;
-	}
+	
+	
+	
+//	@ManyToOne(fetch = FetchType.LAZY)
+//	@JoinColumn(name = "authorId")
+//	public TblAuthor getTblAuthor() {
+//		return this.tblAuthor;
+//	}
 
 	public void setTblAuthor(TblAuthor tblAuthor) {
 		this.tblAuthor = tblAuthor;
@@ -123,7 +125,8 @@ public class TblBook implements java.io.Serializable {
 		this.tblAuthors = tblAuthors;
 	}
 
-	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "tblBooks")
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "tbl_book_genres", catalog = "library", joinColumns = { @JoinColumn(name = "bookId", nullable = false, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "genre_id", nullable = false, updatable = false) })
 	public Set<TblGenre> getTblGenres() {
 		return this.tblGenres;
 	}

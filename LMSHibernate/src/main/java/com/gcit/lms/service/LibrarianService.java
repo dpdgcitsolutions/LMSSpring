@@ -131,4 +131,8 @@ public class LibrarianService {
 		bl.setDateOut(dateOut);
 		bldao.updateDueDate(bl);
 	}
+	
+	public List<Book> viewBooksByBranch(int pageNo, int branchId) throws ClassNotFoundException, SQLException{
+		return bdao.readBooksByBranch(pageNo, branchId);
+	}
 }

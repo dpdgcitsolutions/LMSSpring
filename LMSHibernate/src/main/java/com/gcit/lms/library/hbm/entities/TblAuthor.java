@@ -29,6 +29,10 @@ public class TblAuthor implements java.io.Serializable {
 
 	public TblAuthor() {
 	}
+	
+	public TblAuthor(int authorId) {
+		this.authorId = authorId;
+	}
 
 	public TblAuthor(String authorName) {
 		this.authorName = authorName;

@@ -8,12 +8,12 @@
 <%@ page import="com.gcit.lms.domain.BookCopies" %>
 <%@ page import="com.gcit.lms.service.LibrarianService" %>
 <%
-LibrarianService service = new LibrarianService();
-Integer branchId = Integer.parseInt(request.getParameter("branchId"));
-
-LibraryBranch l = service.viewBranchById(branchId);
+	LibrarianService service = (LibrarianService)request.getAttribute("service");
+	Integer branchId = Integer.parseInt(request.getAttribute("branchId").toString());
+	LibraryBranch l = service.viewBranchById(branchId);
+	List<Book> books = service.viewBooksByBranch(0, branchId);
 %>
-<jsp:include page='include.html'></jsp:include>
+<%@ include file="include.html" %>
 <div class="container">
  	<div class="jumbotron">
 		<h2>GCIT Library Management System</h2>
@@ -23,7 +23,7 @@ LibraryBranch l = service.viewBranchById(branchId);
 
 <div class="users">
     <div class="container">
-		<a href="branch.jsp?branchId=<%=branchId %>" style="font-size:20px;">Back</a><br/><br/>
+		<a href="selectBranch?branchId=<%=branchId %>" style="font-size:20px;">Back</a><br/><br/>
 ${message }
 	<h3>List of Books</h3>
 	<table class="table table-hover">
@@ -36,12 +36,12 @@ ${message }
 			</tr>
 		</thead>
 		<tbody>
-		<% for(Book b : l.getBooks()) {%>
+		<% for(Book b : books) {%>
 			<tr>
 				<td><%=b.getTitle() %></td>
 				<td><%=service.viewBookCopiesByID(b.getBookId(), branchId).getNoOfCopies() %></td>
 				<td><button type="button" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#bookCopiesModal"
-							href='editbookcopies.jsp?branchId=<%=branchId %>&bookId=<%=b.getBookId() %>'>EDIT</button></td>
+							href='prepareEditBookCopies?branchId=<%=branchId %>&bookId=<%=b.getBookId() %>'>EDIT</button></td>
 				<td><button type="button" class="btn btn-danger" onclick="javascript:location.href='deleteAuthor?authorId=<%=b.getBookId()%>'">DELETE</button></td>
 			</tr>
 			<% } %>

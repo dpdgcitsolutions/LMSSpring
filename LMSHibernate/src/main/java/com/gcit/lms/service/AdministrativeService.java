@@ -38,8 +38,6 @@ import com.gcit.lms.library.hbm.entities.TblBorrower;
 import com.gcit.lms.library.hbm.entities.TblGenre;
 import com.gcit.lms.library.hbm.entities.TblPublisher;
 
-import javassist.bytecode.Descriptor.Iterator;
-
 
 public class AdministrativeService {
 	
@@ -128,7 +126,7 @@ public class AdministrativeService {
 		Session session = getSession();
 		TblBorrower b = new TblBorrower();
 		Transaction tx = session.beginTransaction();
-		b = (TblBorrower) session.get("TblBorrower", bo.getCardNo());
+		b = (TblBorrower) session.get(TblBorrower.class, bo.getCardNo());
 		b.setName(bo.getName());
 		b.setAddress(bo.getAddress());
 		b.setPhone(bo.getPhone());
@@ -139,11 +137,12 @@ public class AdministrativeService {
 	
 	@Transactional
 	public void editAuthor(Author author) throws ClassNotFoundException, SQLException{
-		//adao.updateAuthor(author);
+		//adao.updateAuthor(author);		
 		Session session = getSession();
 		TblAuthor a = new TblAuthor();
 		Transaction tx = session.beginTransaction();
-		a = (TblAuthor) session.get("TblAuthor", author.getAuthorId());
+		
+		a = (TblAuthor) session.get(TblAuthor.class, author.getAuthorId());
 		a.setAuthorName(author.getAuthorName());
 		tx.commit();
 		session.close();
@@ -154,22 +153,22 @@ public class AdministrativeService {
 		Session session = getSession();
 		TblBook book = new TblBook();
 		Transaction tx = session.beginTransaction();
-		book = (TblBook) session.get("TblBook", b.getBookId());
+		book = (TblBook) session.get(TblBook.class, b.getBookId());
 		book.setTitle(b.getTitle());
-//		TblPublisher p = new TblPublisher(b.getPublisher().getPublisherId());
-//		book.setTblPublisher(p);
-//		Set<TblAuthor> authors = new HashSet<TblAuthor>();
-//		for( Author a : b.getAuthors() ){
-//			TblAuthor au = new TblAuthor(a.getAuthorId());
-//			authors.add(au);
-//		}
-//		book.setTblAuthors(authors);
-//		Set<TblGenre> genres = new HashSet<TblGenre>();
-//		for( Genre g : b.getGenres() ){
-//			TblGenre ge = new TblGenre(g.getGenre_id());
-//			genres.add(ge);
-//		}
-//		book.setTblGenres(genres);
+		TblPublisher p = new TblPublisher(b.getPublisher().getPublisherId());
+		book.setTblPublisher(p);
+		Set<TblAuthor> authors = new HashSet<TblAuthor>();
+		for( Author a : b.getAuthors() ){
+			TblAuthor au = new TblAuthor(a.getAuthorId());
+			authors.add(au);
+		}
+		book.setTblAuthors(authors);
+		Set<TblGenre> genres = new HashSet<TblGenre>();
+		for( Genre g : b.getGenres() ){
+			TblGenre ge = new TblGenre(g.getGenre_id());
+			genres.add(ge);
+		}
+		book.setTblGenres(genres);
 		tx.commit();
 		session.close();
 //		bdao.updateBook(b);
@@ -202,10 +201,29 @@ public class AdministrativeService {
 		//return adao.readAll(pageNo);
 	}
 	
+	public List<Genre> viewGenres() throws ClassNotFoundException, SQLException{
+		Session session = getSession();
+		Transaction tx = session.beginTransaction();
+		String sql = "SELECT * FROM tbl_genre";
+		SQLQuery query = session.createSQLQuery(sql);
+		List<TblGenre> genres = query.addEntity(TblGenre.class).list();
+		tx.commit();
+		session.close();
+		List<Genre> gs = new ArrayList<Genre>();
+		for( int i = 0; i < genres.size(); i++ ){
+			Genre g = new Genre();
+			g.setGenre_id(genres.get(i).getGenreId());
+			g.setGenre_name(genres.get(i).getGenreName());
+			gs.add(g);
+		}
+		return gs;
+		//return gdao.readAll();	
+	}
+	
 	public List<Author> viewAuthorsByBook(int pageNo, int bookId) throws ClassNotFoundException, SQLException{
 		Session session = getSession();
 		Transaction tx = session.beginTransaction();
-		String sql = "select * from tbl_author where authorId in (select bookId from tbl_book_authors where bookId = :bookId)";
+		String sql = "select * from tbl_author where authorId in (select authorId from tbl_book_authors where bookId = :bookId)";
 		SQLQuery query = session.createSQLQuery(sql).addEntity(TblAuthor.class);
 		query.setParameter("bookId", bookId);
 		if( pageNo != 0 ){
@@ -255,6 +273,7 @@ public class AdministrativeService {
 		else{
 			for( int i = 0; i < genres.size(); i++ ){
 				Genre g = new Genre();
+				g.setGenre_id(genres.get(i).getGenreId());
 				g.setGenre_name(genres.get(i).getGenreName());
 				gs.add(g);
 			}
@@ -291,6 +310,25 @@ public class AdministrativeService {
 		}
 		return ps;
 		//return pdao.readPublisherByBook(bookId);
+	}
+	
+	public Book viewBookByID(Integer bookId) throws ClassNotFoundException, SQLException{
+		Session session = getSession();
+		TblBook b = new TblBook();
+		Transaction tx = session.beginTransaction();		
+		b = (TblBook) session.get(TblBook.class, bookId);
+		Book book = new Book();
+		book.setBookId(bookId);
+		book.setTitle(b.getTitle());
+		Publisher p = new Publisher();
+		p.setPublisherId(b.getTblPublisher().getPublisherId());
+		book.setPublisher(p);
+		tx.commit();
+		session.close();
+		return book;
+//		Book b = new Book();
+//		b.setBookId(bookId);
+//		return bdao.readOne(b);
 	}
 	
 	public List<Book> viewBooks(int pageNo) throws ClassNotFoundException, SQLException{
@@ -419,12 +457,6 @@ public class AdministrativeService {
 		return bcdao.readOne(bc);
 	}
 	
-	public Book viewBookByID(Integer bookId) throws ClassNotFoundException, SQLException{
-		Book b = new Book();
-		b.setBookId(bookId);
-		return bdao.readOne(b);
-	}
-	
 	public List<Book> viewBooksNotInBranch(int branchId) throws ClassNotFoundException, SQLException{
 		return bdao.readBooksNotInBranch(branchId);
 	}
@@ -439,10 +471,6 @@ public class AdministrativeService {
 	
 	public List<Publisher> viewPublishers() throws ClassNotFoundException, SQLException{
 		return pdao.readAll();	
-	}
-	
-	public List<Genre> viewGenres() throws ClassNotFoundException, SQLException{
-		return gdao.readAll();	
 	}
 	
 //	public List<Genre> viewGenresFirstLevel() throws ClassNotFoundException, SQLException{

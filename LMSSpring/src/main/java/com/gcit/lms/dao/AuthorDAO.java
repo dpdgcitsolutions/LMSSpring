@@ -32,7 +32,7 @@ public class AuthorDAO extends BaseDAO implements ResultSetExtractor<List<Author
 	
 	public List<Author> readAuthorsByBook(int pageNo, int bookId) throws ClassNotFoundException, SQLException{
 		setPageNo(pageNo);
-		List<Author> authors = template.query("select * from tbl_author where authorId in (select bookId from tbl_book_authors where bookId = ?)", new Object[]{bookId}, this);
+		List<Author> authors = template.query("select * from tbl_author where authorId in (select authorId from tbl_book_authors where bookId = ?)", new Object[]{bookId}, this);
 		if( authors.isEmpty() ){
 			Author a = new Author();
 			a.setAuthorName("N/A");

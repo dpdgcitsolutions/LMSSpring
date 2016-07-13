@@ -1,11 +1,16 @@
 package com.gcit.lms.dao;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 import com.gcit.lms.domain.Author;
 import com.gcit.lms.domain.Book;
@@ -19,7 +24,23 @@ public class BookDAO extends BaseDAO implements ResultSetExtractor<List<Book>>{
 	}
 	
 	public Integer saveBookWithID(Book book) throws ClassNotFoundException, SQLException{
-		return template.update("insert into tbl_book (title, pubId) values (?,?)", new Object[] {book.getTitle(), book.getPublisher().getPublisherId()});
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		template.update(new PreparedStatementCreator() {
+			@Override
+			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+				PreparedStatement statement = null;
+				if(book.getPublisher() != null) {
+					statement = con.prepareStatement("insert into tbl_book (title, pubId) values (?,?)", new String[] {"id"} );
+					statement.setInt(2, book.getPublisher().getPublisherId());
+				}
+				else {
+					statement = con.prepareStatement("insert into tbl_book (title) values (?)", new String[] {"id"} );
+				}
+				statement.setString(1, book.getTitle());
+				return statement;
+			}
+		}, keyHolder);
+		return keyHolder.getKey().intValue();
 	}
 	
 	public void insertBook(Book book) throws ClassNotFoundException, SQLException{

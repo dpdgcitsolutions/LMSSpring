@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gcit.lms.service.LibrarianService;
+import com.gcit.lms.service.BorrowerService;
 import com.gcit.lms.dao.AuthorDAO;
 import com.gcit.lms.dao.BookAuthorsDAO;
 import com.gcit.lms.dao.BookCopiesDAO;
@@ -33,29 +33,22 @@ import com.gcit.lms.dao.BorrowerDAO;
 import com.gcit.lms.dao.GenreDAO;
 import com.gcit.lms.dao.LibraryBranchDAO;
 import com.gcit.lms.dao.PublisherDAO;
-import com.gcit.lms.domain.Author;
 import com.gcit.lms.domain.Book;
 import com.gcit.lms.domain.BookCopies;
 import com.gcit.lms.domain.BookLoans;
 import com.gcit.lms.domain.Borrower;
-import com.gcit.lms.domain.Genre;
-import com.gcit.lms.domain.LibraryBranch;
-import com.gcit.lms.domain.Publisher;
 
 /**
  * Handles requests for the application home page.
  */
 @RestController
-@RequestMapping("librarian")
-public class LibrarianController {
+@RequestMapping("borrower")
+public class BorrowerController {
 
 	private static final Logger logger = LoggerFactory.getLogger(LibrarianController.class);
 
-	//	@Autowired
-	//	AdministrativeaService aService;
-	
 	@Autowired
-	LibrarianService lService;
+	BorrowerService bService;
 	
 	@Autowired
 	AuthorDAO adao;
@@ -104,45 +97,54 @@ public class LibrarianController {
 
 		return "home";
 	}
-
-	@RequestMapping(value = "/selectBranch", method = RequestMethod.GET)
-	public String selectBranch(Locale locale, Model model, @RequestParam int branchId) {
-		model.addAttribute("service", lService);
-		System.out.println(branchId);
-		model.addAttribute("branchId", branchId);
-		return "librarian/branch";
-	}
 	
 	@RequestMapping(value = "/showBooks/{branchId}", method = RequestMethod.GET, produces = "application/json")
 	public List<Book> showBooks(@PathVariable int branchId) throws ClassNotFoundException, SQLException {
 		return bdao.readBooksByBranch(0, branchId);
 	}
 	
-	@RequestMapping(value = "/prepareEditBookCopies", method = RequestMethod.GET)
-	public String prepareEditBookCopies(Locale locale, Model model, @RequestParam int bookId, @RequestParam int branchId) {
-		model.addAttribute("service", lService);
-		model.addAttribute("bookId", bookId);
-		model.addAttribute("branchId", branchId);
-		return "librarian/editbookcopies";
+	@RequestMapping(value = "/signIn", method = RequestMethod.POST, consumes = "application/json")
+	public String signIn(@RequestBody Borrower bo) throws ClassNotFoundException, SQLException {
+		if( bodao.readOne(bo) == null )
+			return "Invalid Card No";
+		else
+			return "Successfully Signed In";
 	}
 	
-	@RequestMapping(value = "/editBookCopies", method = RequestMethod.POST, consumes = "application/json")
-	public String editBookCopies(@RequestBody BookCopies bc) throws ClassNotFoundException, SQLException {
-		bcdao.updateBookCopies(bc);
-		return "Updated Book Copies Successfully";
+	@RequestMapping(value = "/checkOut", method = RequestMethod.POST, consumes = "application/json")
+	public String checkOut(@RequestBody BookLoans bl) throws ClassNotFoundException, SQLException {
+		int bookId = bl.getBookId();
+		int branchId = bl.getBranchId();
+		BookCopies bc = new BookCopies();
+		bc.setBookId(bookId);
+		bc.setBranchId(branchId);
+		BookCopies bcp = bcdao.readOne(bc);
+		if( bcp != null && bcp.getNoOfCopies() > 0 ){
+			bcp.setNoOfCopies(bcp.getNoOfCopies()-1);
+			bcdao.updateBookCopies(bcp);
+			bldao.insertBookLoans(bl);
+			return "Check Out Successfully";
+		}
+		else
+			return "Book is not in branch or no copies available";
 	}
 	
-	@RequestMapping(value = "/addBookCopies", method = RequestMethod.POST, consumes = "application/json")
-	public String addBookCopies( @RequestBody BookCopies bc ) throws ClassNotFoundException, SQLException {
-		bcdao.insertBookCopies(bc);
-		return "Added Book Copies Successfully";
+	@RequestMapping(value = "/viewBookLoans", method = RequestMethod.POST, produces = "application/json")
+	public List<BookLoans> viewBookLoans(@RequestBody Borrower bo) throws ClassNotFoundException, SQLException {
+		return bldao.readAllByCardNo(bo.getCardNo());
 	}
 	
-	@RequestMapping(value = "/extendDueDate", method = RequestMethod.POST, consumes = "application/json")
-	public String extendDueDate(@RequestBody BookLoans bl) throws ClassNotFoundException, SQLException {
+	@RequestMapping(value = "/checkIn", method = RequestMethod.POST, consumes = "application/json")
+	public String checkIn(@RequestBody BookLoans bl) throws ClassNotFoundException, SQLException {
 		if( bldao.readOne(bl) != null ){
-			bldao.updateDueDate(bl);
-			return "Extended Successfully";
+			bldao.updateDateIn(bl);
+			BookCopies bc = new BookCopies();
+			bc.setBookId(bl.getBookId());
+			bc.setBranchId(bl.getBranchId());
+			BookCopies bcp = bcdao.readOne(bc);
+			bcp.setNoOfCopies(bcp.getNoOfCopies() + 1);
+			bcdao.updateBookCopies(bcp);
+			return "Check In Successfully";
 		}
 		else
 			return "Record not found!";

@@ -28,6 +28,7 @@ import com.gcit.lms.dao.BookAuthorsDAO;
 import com.gcit.lms.dao.BookCopiesDAO;
 import com.gcit.lms.dao.BookDAO;
 import com.gcit.lms.dao.BookGenresDAO;
+import com.gcit.lms.dao.BookLoansDAO;
 import com.gcit.lms.dao.BorrowerDAO;
 import com.gcit.lms.dao.GenreDAO;
 import com.gcit.lms.dao.LibraryBranchDAO;
@@ -35,6 +36,7 @@ import com.gcit.lms.dao.PublisherDAO;
 import com.gcit.lms.domain.Author;
 import com.gcit.lms.domain.Book;
 import com.gcit.lms.domain.BookCopies;
+import com.gcit.lms.domain.BookLoans;
 import com.gcit.lms.domain.Borrower;
 import com.gcit.lms.domain.Genre;
 import com.gcit.lms.domain.LibraryBranch;
@@ -81,6 +83,9 @@ public class AdminController {
 	
 	@Autowired
 	LibraryBranchDAO ldao;
+	
+	@Autowired
+	BookLoansDAO bldao;
 
 	/**
 	 * Simply selects the home view to render by returning its name.
@@ -156,6 +161,16 @@ public class AdminController {
 		return "Updated Book Copies Successfully";
 	}
 	
+	@RequestMapping(value = "/extendDueDate", method = RequestMethod.POST, consumes = "application/json")
+	public String extendDueDate(@RequestBody BookLoans bl) throws ClassNotFoundException, SQLException {
+		if( bldao.readOne(bl) != null ){
+			bldao.updateDueDate(bl);
+			return "Extended Successfully";
+		}
+		else
+			return "Record not found!";
+	}
+	
 	@RequestMapping(value = "/selectBranch", method = RequestMethod.GET)
 	public String branch(Locale locale, Model model, @RequestParam int branchId) {
 		model.addAttribute("service", aService);
@@ -224,7 +239,6 @@ public class AdminController {
 		return adao.readBySearchString(searchString, 0);
 	}
 
-
 	@RequestMapping(value = "/addBorrower", method = RequestMethod.POST, consumes = "application/json")
 	public String addBorrowerFunction(@RequestBody Borrower bo) throws ClassNotFoundException, SQLException {
 		bodao.insertBorrower(bo);
@@ -235,6 +249,12 @@ public class AdminController {
 	public String addBookCopies( @RequestBody BookCopies bc ) throws ClassNotFoundException, SQLException {
 		bcdao.insertBookCopies(bc);
 		return "Added Book Copies Successfully";
+	}
+	
+	@RequestMapping(value = "/addBranch", method = RequestMethod.POST, consumes = "application/json")
+	public String addBranch( @RequestBody LibraryBranch lib ) throws ClassNotFoundException, SQLException {
+		ldao.insertLibraryBranch(lib);
+		return "Added Branch Successfully";
 	}
 
 	@RequestMapping(value = "/addAuthor", method = RequestMethod.POST, consumes = "application/json")

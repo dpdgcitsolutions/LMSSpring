@@ -59,6 +59,18 @@ public class BookLoansDAO extends BaseDAO implements ResultSetExtractor<List<Boo
 		return template.query("select * from tbl_book_loans where branchId = ? and dateIn is null", new Object[]{branchId}, this);
 	}
 	
+	public List<BookLoans> readAllByCardNo(int cardNo){
+		return template.query("select * from tbl_book_loans where cardNo = ? and dateIn is null", new Object[]{cardNo}, this);
+	}
+	
+	public BookLoans readOne(BookLoans bl){
+		List<BookLoans> bls = template.query("select * from tbl_book_loans where bookId = ? and branchId = ? and cardNo = ? and dateOut = ? and dateIn is null", new Object[]{bl.getBookId(), bl.getBranchId(), bl.getCardNo(), bl.getDateOut()}, this);
+		for( BookLoans b : bls ){
+			return b;
+		}
+		return null;
+	}
+	
 //	public List<Author> readAll(int pageNo) throws ClassNotFoundException, SQLException{
 //		setPageNo(pageNo);
 //		return read("select * from tbl_book_loans", null);

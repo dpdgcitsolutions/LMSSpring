@@ -1,0 +1,45 @@
+<div ng-controller="authorCtrl">
+
+	<div class="users">
+		<div class="container">
+			<nav>
+			  <ul class="pagination">
+			    <li><a id="pageNo" onclick="pageAuthors(1)">1</a></li>
+			  </ul>
+			</nav>
+			<form action="searchAuthor" method="post">
+				<input type="text" name="searchString" id="searchString" placeholder="Enter Author Name" onkeypress="searchAuthors()"/>
+			</form>
+	
+		<a href="#/admin/author" style="font-size:20px;">Back</a><br/><br/>
+			
+		<h3>List of Authors</h3>
+		<table class="table table-hover" id="authorsTable">
+			<thead>
+				<tr>
+					<th>Author Name</th>
+					<th>Book Title</th>
+					<th>Edit Author</th>
+					<th>Delete Author</th>
+				</tr>
+			<thead>
+			<tbody>
+				<tr ng-repeat="a in authors">
+					<td>{{a.authorName}}</td>
+					<td>{{a.books[0].title}}</td>
+					<td><button type="button" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#authorModal"
+							href='prepareEditAuthor?authorId={{a.authorId}}'>EDIT</button></td>
+					<td><button type="button" class="btn btn-danger" onclick="javascript:location.href='deleteAuthor?authorId=<%=a.getAuthorId()%>'">DELETE</button></td>
+				</tr>
+			</tbody>	
+		</table>
+	
+		<div id="authorModal" class="modal fade" tabindex="-1" role="dialog"
+			aria-labelledby="myLargeModalLabel">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content"></div>
+			</div>
+		</div>
+		</div>
+	</div>
+</div>

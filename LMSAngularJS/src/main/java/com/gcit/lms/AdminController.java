@@ -188,6 +188,8 @@ public class AdminController {
 	@RequestMapping(value = "/editBook", method = RequestMethod.POST, consumes = "application/json")
 	public String editBook(@RequestBody Book book) throws ClassNotFoundException, SQLException {
 		bdao.updateBook(book);
+		badao.updateBookAuthors(book);
+		bgdao.updateBookGenres(book);
 		return "Updated Book Successfully";
 	}
 	
@@ -317,6 +319,11 @@ public class AdminController {
 			a.setBooks(bdao.readBooksByAuthor(0, a.getAuthorId()));
 		}
 		return authors;
+	}
+	
+	@RequestMapping(value = "/getAuthorCount", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json")
+	public int getAuthorCount() throws ClassNotFoundException, SQLException {
+		return adao.getCount();
 	}
 	
 	@RequestMapping(value = "/viewPublishers", method = RequestMethod.GET, produces = "application/json")

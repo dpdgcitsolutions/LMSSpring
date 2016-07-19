@@ -23,25 +23,19 @@
 					    <div class="form-group">
 					      <label class="control-label col-sm-2" for="publishers">Publisher:</label>
 					      <div class="col-sm-10">
-					      <select id="pubId" name="pubId" ng-model="b.publisherId">
-							<option ng-repeat="p in publishers" value={{p.publisherId}}>{{p.publisherName}}</option>
-						  </select>
+					      <select id="pubId" name="pubId" ng-options="pub.publisherName for pub in publishers track by pub.publisherId" ng-model="selectedPub"></select>
 						  </div>
 					    </div>
 					    <div class="form-group">
 					      <label class="control-label col-sm-2" for="authors">Author:</label>
 					      <div class="col-sm-10">
-					      <select id="authorId" name="authorId" ng-model="b.authorId">
-							<option ng-repeat="a in authors" value={{a.authorId}}>{{a.authorName}}</option>
-						  </select>
+					      <select id="authorId" name="authorId" ng-options="a.authorName for a in authors track by a.authorId" ng-model="selectedAuthor" multiple></select>
 						  </div>
 					    </div>
 					    <div class="form-group">
 					      <label class="control-label col-sm-2" for="genres">Genre:</label>
 					      <div class="col-sm-10">
-					      <select id="genreId" name="genreId" ng-model="b.genre_id">
-							<option ng-repeat="g in genres" value={{g.genre_id}}>{{g.genre_name}}</option>
-						</select>
+					      <select id="genreId" name="genreId" ng-options="g.genre_name for g in genres track by g.genre_id" ng-model="selectedGenre" multiple></select>
 						</div>
 					    </div>
 						<div class="form-group">

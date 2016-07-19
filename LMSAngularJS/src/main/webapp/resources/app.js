@@ -1,4 +1,4 @@
-var libraryModule = angular.module('libraryApp', ['ngRoute', 'ngCookies']);
+var libraryModule = angular.module('libraryApp', ['ngRoute', 'ngCookies', 'ui.bootstrap']);
 
 libraryModule.config(["$routeProvider", function($routeProvider){
 	return $routeProvider.when("/",{
@@ -22,11 +22,31 @@ libraryModule.config(["$routeProvider", function($routeProvider){
 	})
 }])
 
-libraryModule.controller('authorCtrl', function($scope, $http, $window){
-	$http.get('http://localhost:8080/lms/admin/viewAuthors/0').
+
+libraryModule.controller('authorCtrl', function($scope, $http, $window, $log, $route, $uibModal){	
+	$http.get('http://localhost:8080/lms/admin/getAuthorCount').
+	success(function(data){
+		$scope.totalItems = data;
+	});
+	
+	$http.get('http://localhost:8080/lms/admin/viewAuthors/1').
 	success(function(data){
 		$scope.authors = data;
 	});
+	
+	$scope.currentPage = 1;
+	$scope.maxSize = 5;
+	
+	$scope.setPage = function (pageNo) {
+	    $scope.currentPage = pageNo;
+	};
+	
+	$scope.pageChanged = function() {
+		$http.get('http://localhost:8080/lms/admin/viewAuthors/' + $scope.currentPage).
+		success(function(data){
+			$scope.authors = data;
+		});
+	};
 	
 	$scope.addAuthor = function(){
 		var author = {authorName: $scope.author.authorName};
@@ -34,10 +54,58 @@ libraryModule.controller('authorCtrl', function($scope, $http, $window){
 			success(function(data){
 				$window.location.href = "#/admin/viewAuthors";
 		});
-	}
+	};
+
+	// edit author modal
+	  $scope.animationsEnabled = true;
+
+	  $scope.open = function (size, a) {
+
+	    var modalInstance = $uibModal.open({
+	      animation: $scope.animationsEnabled,
+	      templateUrl: 'editAuthorModal.html',
+	      controller: 'ModalInstanceCtrl',
+	      size: size,
+	      resolve: {
+	        item: function () {
+	          return a;
+	        }
+	      }
+	    });
+	    
+	    // editAuthor
+	    modalInstance.result.then(function (selectedItem) {
+	      var author = { authorId : selectedItem.authorId, authorName : selectedItem.authorName };
+	      console.log(author);
+			$http.post('http://localhost:8080/lms/admin/editAuthor', author).
+				success(function(data){
+					$route.reload();
+					//$scope.message = "<div class='alert alert-success'>" + data + "</div>";
+				});
+	    });
+	  };
+
+	  $scope.toggleAnimation = function () {
+	    $scope.animationsEnabled = !$scope.animationsEnabled;
+	  };
+
 })
 
-libraryModule.controller('bookCtrl', function($scope, $http, $window){
+libraryModule.controller("ModalInstanceCtrl", function ($scope, $uibModalInstance, item) {
+
+	  $scope.item = item;
+	  $scope.selected = item;
+	  $scope.ok = function (selected) {
+		    $uibModalInstance.close(selected);
+		  };
+
+	  $scope.cancel = function () {
+	    $uibModalInstance.dismiss('cancel');
+	  };
+	});
+
+
+libraryModule.controller('bookCtrl', function($scope, $http, $window, $route, $uibModal){
 	$http.get('http://localhost:8080/lms/admin/viewBooks/0').
 	success(function(data){
 		$scope.books = data;
@@ -53,9 +121,9 @@ libraryModule.controller('bookCtrl', function($scope, $http, $window){
 	
 	$scope.addBook = function(){
 		var book = { title: $scope.b.title, 
-				authors: [ {authorId : $scope.b.authorId} ], 
-				publisher: {publisherId : $scope.b.publisherId},
-				genres: [ {genre_id: $scope.b.genre_id} ] };
+				authors: $scope.selectedAuthor, 
+				publisher: $scope.selectedPub,
+				genres: $scope.selectedGenre };
 		console.log(book);
 		
 		$http.post('http://localhost:8080/lms/admin/addBook', book).
@@ -63,4 +131,54 @@ libraryModule.controller('bookCtrl', function($scope, $http, $window){
 			$window.location.href = "#/admin/viewBooks";
 		});
 	}
+	
+	// edit book modal
+	  $scope.animationsEnabled = true;
+
+	  $scope.open = function (size, b) {
+
+	    var modalInstance = $uibModal.open({
+	      animation: $scope.animationsEnabled,
+	      templateUrl: 'editBookModal.html',
+	      controller: 'ModalInstanceCtrl',
+	      size: size,
+	      resolve: {
+	        item: function () {
+	        	$http.get('http://localhost:8080/lms/admin/addBook').
+	        	success(function(data){
+	        		$scope.book = data;
+	        		b.editAuthors = $scope.book.authors;
+		        	b.editPublishers = $scope.book.publishers;
+		        	b.editGenres = $scope.book.genres;
+	        	});
+	        	b.selectedPub = b.publisher;
+	        	b.selectedAuthors = b.authors;
+	        	b.selectedGenres = b.genres;
+	          return b;
+	        }
+	      }
+	    });
+	    
+	    // editBook
+	    modalInstance.result.then(function (selectedItem) {
+	    	var book = { 
+					bookId : selectedItem.bookId,
+					title : selectedItem.title,
+					publisher : selectedItem.selectedPub,
+					authors : selectedItem.selectedAuthors,
+					genres : selectedItem.selectedGenres					
+				};
+	      //var author = { authorId : selectedItem.authorId, authorName : selectedItem.authorName };
+			$http.post('http://localhost:8080/lms/admin/editBook', book).
+				success(function(data){
+					$route.reload();
+					//$scope.message = "<div class='alert alert-success'>" + data + "</div>";
+				});
+	    });
+	  };
+
+	  $scope.toggleAnimation = function () {
+	    $scope.animationsEnabled = !$scope.animationsEnabled;
+	  };
+	
 })

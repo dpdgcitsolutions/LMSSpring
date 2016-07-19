@@ -68,13 +68,21 @@ public class BookDAO extends BaseDAO implements ResultSetExtractor<List<Book>>{
 	}
 
 	public List<Book> readAll(int pageNo) throws ClassNotFoundException, SQLException{
-		setPageNo(pageNo);
-		return template.query("select * from tbl_book", this);
+		String query = "select * from tbl_book";
+		if(pageNo > 0){
+			int index = (pageNo-1)*10;
+			query += " LIMIT "+index+" , "+getPageSize();
+		};
+		return template.query(query, this);
 	}
 	
 	public List<Book> readBooksByAuthor(int pageNo, int authorId) throws ClassNotFoundException, SQLException{
-		setPageNo(pageNo);
-		List<Book> books = template.query("select * from tbl_book where bookId in (select bookId from tbl_book_authors where authorId = ?)", new Object[]{authorId}, this);
+		String query = "select * from tbl_book where bookId in (select bookId from tbl_book_authors where authorId = ?)";
+		if(pageNo > 0){
+			int index = (pageNo-1)*10;
+			query += " LIMIT "+index+" , "+getPageSize();
+		};
+		List<Book> books = template.query(query, new Object[]{authorId}, this);
 		if( books.isEmpty() ){
 			Book b = new Book();
 			b.setTitle("N/A");
@@ -84,8 +92,12 @@ public class BookDAO extends BaseDAO implements ResultSetExtractor<List<Book>>{
 	}
 	
 	public List<Book> readBooksByBranch(int pageNo, int branchId) throws ClassNotFoundException, SQLException{
-		setPageNo(pageNo);
-		List<Book> books = template.query("select * from tbl_book where bookId in (select bookId from tbl_book_copies where branchId = ?)", new Object[]{branchId}, this);
+		String query = "select * from tbl_book where bookId in (select bookId from tbl_book_copies where branchId = ?)";
+		if(pageNo > 0){
+			int index = (pageNo-1)*10;
+			query += " LIMIT "+index+" , "+getPageSize();
+		};
+		List<Book> books = template.query(query, new Object[]{branchId}, this);
 		if( books.isEmpty() ){
 			Book b = new Book();
 			b.setTitle("N/A");

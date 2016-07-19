@@ -21,6 +21,13 @@ public class BookGenresDAO extends BaseDAO implements ResultSetExtractor<List<Bo
 		}
 	}
 	
+	public void updateBookGenres(Book book){
+		template.update("delete from tbl_book_genres where bookId = ?", new Object[] {book.getBookId()});
+		for( Genre g: book.getGenres() ){
+			template.update("insert into tbl_book_genres (genre_id, bookId) values (?,?)", new Object[] {g.getGenre_id(), book.getBookId()});
+		}
+	}
+	
 	public void deleteBookGenres(Book book) throws ClassNotFoundException, SQLException{
 		template.update("delete from tbl_book_genres where bookId = ?", new Object[] {book.getBookId()});
 	}

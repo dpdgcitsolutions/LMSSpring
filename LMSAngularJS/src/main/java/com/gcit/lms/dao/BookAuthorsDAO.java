@@ -19,6 +19,13 @@ public class BookAuthorsDAO extends BaseDAO implements ResultSetExtractor<List<B
 		}
 	}
 	
+	public void updateBookAuthors(Book book){
+		template.update("delete from tbl_book_authors where bookId = ?", new Object[]{book.getBookId()});
+		for(Author a: book.getAuthors()) {
+			template.update("insert into tbl_book_authors (bookId, authorId) values (?,?)", new Object[] {book.getBookId(), a.getAuthorId()});
+		}
+	}
+	
 	public void deleteBookAuthors(Book book) throws ClassNotFoundException, SQLException{
 		template.update("delete from tbl_book_authors where bookId = ?", new Object[] {book.getBookId()});
 	}

@@ -1,18 +1,13 @@
 <div ng-controller="authorCtrl">
-
 	<div class="users">
 		<div class="container">
-			<nav>
-			  <ul class="pagination">
-			    <li><a id="pageNo" onclick="pageAuthors(1)">1</a></li>
-			  </ul>
-			</nav>
+			<a href="#/admin/author" style="font-size:20px;">Back</a><br/><br/>
+			<uib-pagination direction-links="false" boundary-links="true" total-items="totalItems" ng-model="currentPage" ng-change="pageChanged()"></uib-pagination>
 			<form action="searchAuthor" method="post">
 				<input type="text" name="searchString" id="searchString" placeholder="Enter Author Name" onkeypress="searchAuthors()"/>
 			</form>
 	
-		<a href="#/admin/author" style="font-size:20px;">Back</a><br/><br/>
-			
+		{{message}}
 		<h3>List of Authors</h3>
 		<table class="table table-hover" id="authorsTable">
 			<thead>
@@ -24,22 +19,40 @@
 				</tr>
 			<thead>
 			<tbody>
-				<tr ng-repeat="a in authors">
-					<td>{{a.authorName}}</td>
+				<tr ng-repeat="a in authors" ng-model="a">
+					<td >{{a.authorName}}</td>
 					<td>{{a.books[0].title}}</td>
-					<td><button type="button" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#authorModal"
-							href='prepareEditAuthor?authorId={{a.authorId}}'>EDIT</button></td>
-					<td><button type="button" class="btn btn-danger" onclick="javascript:location.href='deleteAuthor?authorId=<%=a.getAuthorId()%>'">DELETE</button></td>
+					<td><button type="button" class="btn btn-sm btn-warning" ng-click="open('lg', a)">EDIT</button></td>
+					<td><button type="button" class="btn btn-danger" ng-click="showDeleteAuthor()">DELETE</button></td>
 				</tr>
 			</tbody>	
 		</table>
-	
-		<div id="authorModal" class="modal fade" tabindex="-1" role="dialog"
-			aria-labelledby="myLargeModalLabel">
-			<div class="modal-dialog modal-lg">
-				<div class="modal-content"></div>
+
+
+		<script type="text/ng-template" id="editAuthorModal.html">
+		
+        <div class="modal-header">
+            <h3 class="modal-title">Hello Admin! Edit Author details</h3>
+        </div>
+        <div class="modal-body">
+            <form role="form" class="form-horizontal">
+				<div class="form-group">
+					<label class="control-label col-sm-3" for="author">Edit Author Name:</label>
+						<div class="col-sm-8">
+							 <input type="text" class="form-control" name="authorName" ng-model="item.authorName">
+						</div>
+				</div>
+				<div class="col-sm-4">
+					<input type="hidden" name="authorId" ng-model="item.authorId">
+				</div>
+			</form>
+        </div>
+        <div class="modal-footer">
+            <button ng-click="ok(item)" class="btn btn-warning">Edit Author</button>
+			<button type="button" class="btn btn-success" ng-click="cancel()">Cancel</button>
+        </div>
+    </script>
+
 			</div>
 		</div>
-		</div>
-	</div>
 </div>
